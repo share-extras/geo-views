@@ -1,0 +1,6 @@
+<webscript>
+   <shortname>Site Geotagged Content</shortname>
+   <description>Displays all geotagged content in a map view</description>
+   <url>/components/dashlets/site-geo-content</url>
+   <family>site-dashlet</family>
+</webscript>
