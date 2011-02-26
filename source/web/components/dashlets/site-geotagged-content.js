@@ -147,7 +147,7 @@
        */
       refreshContent: function SiteGeotaggedContent_refreshContent()
       {
-         var doclistUrl = Alfresco.constants.PROXY_URI + "slingshot/doclib/doclist/documents/site/" + this.options.siteId + "/documentLibrary/?filter=path&size=50&pos=1";
+         var doclistUrl = Alfresco.constants.PROXY_URI + "slingshot/site/" + this.options.siteId + "/geotagged-content";
          
          // Make an AJAX request to the Tag Service REST API
          Alfresco.util.Ajax.jsonGet(
@@ -192,13 +192,10 @@
             
             if (item.nodeType == "cm:content" && item.geolocation)
             {
-               if ((item.geolocation.latitude) && (item.geolocation.longitude))
-               {
-                  numGeoItems ++;
-                  geoItemsTotalLat += item.geolocation.latitude;
-                  geoItemsTotalLng += item.geolocation.longitude;
-                  this.createMarker(this.map, item);
-               }
+               numGeoItems ++;
+               geoItemsTotalLat += item.geolocation.latitude;
+               geoItemsTotalLng += item.geolocation.longitude;
+               this.createMarker(this.map, item);
             }
          }
          if (numGeoItems > 0)

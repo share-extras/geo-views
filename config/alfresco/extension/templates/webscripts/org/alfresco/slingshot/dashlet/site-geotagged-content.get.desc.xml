@@ -1,0 +1,7 @@
+<webscript>
+   <shortname>Site Geotagged Content</shortname>
+   <description>Lists all geotagged content within the site for display on a map</description>
+   <url>/slingshot/site/{siteId}/geotagged-content</url>
+   <format default="json">extension</format>
+   <authentication>user</authentication>
+</webscript>
