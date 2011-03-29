@@ -16,10 +16,18 @@ function main()
       return;
    }
    
+   var query = "PATH:\"" + site.node.qnamePath + "//*\" AND ASPECT:\"{http://www.alfresco.org/model/content/1.0}geographic\"";
+   if (args.bb !== null && args.bb !== "")
+   {
+      var ba = args.bb.split(",");
+      query += " AND cm:latitude:" + ba[0] + ".." + ba[2];
+      query += " AND cm:longitude:" + ba[1] + ".." + ba[3];
+   }
+   
    model.siteId = siteId;
    model.items = search.query(
       {
-         query: "PATH:\"" + site.node.qnamePath + "//*\" AND ASPECT:\"{http://www.alfresco.org/model/content/1.0}geographic\"",
+         query: query,
          language: "fts-alfresco",
          page: {
             maxItems: 100,

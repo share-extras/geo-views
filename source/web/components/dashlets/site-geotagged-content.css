@@ -7,3 +7,10 @@
 .map-dashlet .body {
 	height: 200px;
 }
+.infobox-thumbnail {
+   float: left;
+}
+.infobox-details {
+	margin-left: 110px;
+	width: 100px;
+}
