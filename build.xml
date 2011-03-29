@@ -38,7 +38,7 @@
     <property name="config.excludes" value="" />
     <property name="build.res.includes" value="**/*.*" />
     <property name="build.res.excludes" value="" />
-    <property name="build.res.dir.name" value="ROOT/share-extension" />
+    <property name="build.res.dir.name" value="share" />
     <property name="post.verbose" value="false" />
     <property name="webapp.alfresco.path" value="/alfresco" />
     <property name="webapp.share.path" value="/share" />
@@ -47,6 +47,7 @@
     <property name="webapp.manager.url" value="${tomcat.url}/manager" />
     <property name="webapp.manager.username" value="admin" />
     <property name="webapp.manager.password" value="" />
+    <property name="yuicompress.warn" value="false" />
    
    <!-- Additional property values. Generally should not be overridden -->
     <property name="config.dir" value="${basedir}/config" />
@@ -120,8 +121,8 @@
             <fileset dir="${res.dir}" includes="${build.res.includes}" excludes="${build.res.excludes}" />
         </copy>
         <!-- Minify JS -->
-        <yuicompress fromdir="${res.dir}" todir="${build.jar.dir}/META-INF" >
-           <include name="**/*.js" />
+        <yuicompress fromdir="${res.dir}" todir="${build.jar.dir}/META-INF" excludes="**/*-min.js" warn="yuicompress.warn">
+            <include name="**/*.js" />
         </yuicompress>
     </target>
    
@@ -156,16 +157,16 @@
         
         In version 3.3 and above the JAR file mechanism is recommended as an alternative.
     -->
-    <target name="build-zip-tomcat" depends="build-zip-prepare,build-zip-shared,build-zip-shared-translate"
+    <target name="build-zip-tomcat" depends="build-zip-prepare,build-zip-config"
       description="Assemble the configuration and resource files for a Tomcat deployment structure">
       <!-- Copy web assets -->
         <copy todir="${build.zip.dir}/webapps/${build.res.dir.name}">
             <fileset dir="${res.dir}" includes="${build.res.includes}" excludes="${build.res.excludes}" />
         </copy>
-        <!-- Minifies JS -->
-       <yuicompress fromdir="${res.dir}" todir="${build.zip.dir}/webapps/${build.res.dir.name}" >
-                 <include name="**/*.js" />
-         </yuicompress>
+        <!-- Minify JS -->
+        <yuicompress fromdir="${res.dir}" todir="${build.zip.dir}/webapps/${build.res.dir.name}" excludes="**/*-min.js" warn="yuicompress.warn">
+            <include name="**/*.js" />
+        </yuicompress>
     </target>
 
     <target name="build-zip-prepare">
@@ -173,22 +174,16 @@
         <mkdir dir="${build.zip.dir}/webapps/${build.res.dir.name}" />
     </target>
 
-    <target name="build-zip-shared">
+    <target name="build-zip-config">
         <copy todir="${build.zip.dir}/shared/classes">
-            <fileset dir="${config.dir}" includes="${config.includes}" excludes="${config.excludes}">
+            <fileset dir="${config.dir}" includes="${config.includes}">
                 <or>
-                  <filename name="alfresco/web-extension/**"/>
-                    <filename name="alfresco/extension/**"/>
+                    <filename name="alfresco/**"/>
+                    <filename name="org/springframework/**"/>
                 </or>
-            </fileset>
-        </copy>
-    </target>
-
-    <target name="build-zip-shared-translate" if="build.zip.config.translate">
-        <copy todir="${build.zip.dir}/shared/classes">
-            <globmapper from="alfresco/site-*" to="alfresco/web-extension/site-*" handledirsep="true" />
-            <fileset dir="${config.dir}" includes="${config.includes}" excludes="${config.excludes}">
-                <filename name="alfresco/site-*/**"/>
+                <exclude name="alfresco/web-extension/custom-slingshot-application-context.xml" />
+                <exclude name="alfresco/web-extension/share-config-custom.xml" />
+                <exclude name="${config.excludes}" />
             </fileset>
         </copy>
     </target>
@@ -241,7 +236,7 @@
         </copy>
 
        <!-- Minify JS -->
-       <yuicompress fromdir="${res.dir}" todir="${build.amp.dir}/web" >
+       <yuicompress fromdir="${res.dir}" todir="${build.amp.dir}/web" excludes="**/*-min.js" warn="yuicompress.warn">
           <include name="**/*.js" />
        </yuicompress>
     </target>
