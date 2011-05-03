@@ -1,0 +1,9 @@
+.doclist .onActionGeotag a
+{
+   background-image: url(geotag-16.png) !important;
+}
+.geotag-dialog-map
+{
+	width: 100%;
+	height: 20em;
+}

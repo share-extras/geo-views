@@ -1,6 +1,7 @@
 .document-geographic-info
 {
-   padding: 0em 1em 0em 0em;
+   padding: 0em 1em 2em 0em;
+   border-bottom: 1px solid #C2C2C2;
 }
 
 .document-geographic-info .heading
