@@ -106,6 +106,7 @@
                      map: map,
                      title: displayName
                   });
+                  map.setZoom(10);
                }
                // Add click listener to the map to update coordinates
                google.maps.event.addListener(map, "click", function(e) {
