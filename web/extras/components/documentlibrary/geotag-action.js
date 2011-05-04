@@ -40,16 +40,10 @@
          //this.initializeMap(docData);
       }
 
-      var doSetupFormsValidation = function dlA_oACT_doSetupFormsValidation(p_form)
+      // Validation
+      var fnValidate = function fnValidate(field, args, event, form, silent, message)
       {
-         // Validation
-         var fnValidate = function fnValidate(field, args, event, form, silent, message)
-         {
-            return field.value !== "";
-         };
-         p_form.addValidation(this.id + "-geotag-lat", fnValidate, null, "change");
-         p_form.addValidation(this.id + "-geotag-lon", fnValidate, null, "change");
-         p_form.setShowSubmitStateDynamically(true, false);
+         return field.value !== "";
       };
 
       // Always create a new instance
@@ -58,11 +52,6 @@
          width: "50em",
          templateUrl: Alfresco.constants.URL_SERVICECONTEXT + "extras/modules/documentlibrary/geotag",
          actionUrl: actionUrl,
-         doSetupFormsValidation:
-         {
-            fn: doSetupFormsValidation,
-            scope: this
-         },
          onSuccess:
          {
             fn: function dlA_onActionChangeType_success(response)
@@ -91,8 +80,13 @@
          },
          doSetupFormsValidation:
          {
-            fn: function dlA_doSetupForm_callback(form)
+            fn: function dlA_onActionChangeType_doSetupFormsValidation(p_form)
             {
+               // Add validation
+               p_form.addValidation(this.id + "-geotag-lat", fnValidate, null, "change");
+               p_form.addValidation(this.id + "-geotag-lon", fnValidate, null, "change");
+               p_form.setShowSubmitStateDynamically(true, false);
+            
                var me = this, marker = null;
                // Set up the GMap
                var latLng = new google.maps.LatLng(lat !== "" ? lat : 0.0, lon !== "" ? lon : 0.0);
@@ -120,7 +114,7 @@
                   Dom.get(me.modules.geotag.id + "-lon").value = e.latLng.lng();
                   
                   // Trigger re-validation of the form
-                  me.modules.geotag.form.updateSubmitElements();
+                  p_form.updateSubmitElements();
                   
                   // Remove the old marker if present
                   if (marker !== null)
