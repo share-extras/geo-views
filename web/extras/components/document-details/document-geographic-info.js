@@ -36,6 +36,21 @@
    YAHOO.extend(Alfresco.DocumentGeographicInfo, Alfresco.component.Base,
    {
       /**
+       * GMap object
+       */
+      map: null,
+      
+      /**
+       * GMap marker
+       */
+      marker: null,
+      
+      /**
+       * Map container div
+       */
+      mapContainer: null,
+      
+      /**
        * Event handler called when the "documentDetailsAvailable" event is received
        *
        * @method: onDocumentDetailsAvailable
@@ -48,8 +63,20 @@
          if (typeof(docData.geolocation) === "object" &&
                typeof(docData.geolocation.latitude) !== "undefined")
          {
-            this.initializeMap(docData);
             Dom.removeClass(this.id + "-body", "hidden");
+            
+            if (this.map == null)
+            {
+               this.initializeMap(docData);
+            }
+            else
+            {
+               this.updateMap(docData);
+            }
+         }
+         else
+         {
+            Dom.addClass(this.id + "-body", "hidden");
          }
       },
    
@@ -66,11 +93,35 @@
             center: latLng,
             mapTypeId: google.maps.MapTypeId.ROADMAP
          }
-         var map = new google.maps.Map(this.mapContainer, myOptions);
-         var marker = new google.maps.Marker(
+         this.map = new google.maps.Map(this.mapContainer, myOptions);
+         this.marker = new google.maps.Marker(
          {
             position: latLng,
-            map: map,
+            map: this.map,
+            title: doc.fileName
+         });
+      },
+   
+      /**
+       * Update the map view
+       * @method updateMap
+       */
+      updateMap: function SiteGeotaggedContent_updateMap(doc)
+      {
+         // First clear any existing marker
+         if (this.marker != null)
+         {
+            this.marker.setMap(null);
+            this.marker = null;
+         }
+         // Then re-center the map
+         var latLng = new google.maps.LatLng(doc.geolocation.latitude, doc.geolocation.longitude);
+         this.map.panTo(latLng);
+         // Then add the new marker to the map
+         this.marker = new google.maps.Marker(
+         {
+            position: latLng,
+            map: this.map,
             title: doc.fileName
          });
       }
