@@ -145,10 +145,19 @@
        * Map container div object
        * 
        * @property mapContainer
-       * @type object
+       * @type HTMLElement
        * @default null
        */
       mapContainer: null,
+      
+      /**
+       * Selected marker object
+       * 
+       * @property selectedMarker
+       * @type google.maps.Marker
+       * @default null
+       */
+      selectedMarker: null,
 
       /**
        * Fired by YUI when parent element is available for scripting
@@ -273,14 +282,19 @@
             }
             return null;
          }
+         
+         var isSameMarker = function(m1, m2)
+         {
+            return m1 != null && m2 != null && m1.getPosition().equals(m1.getPosition());
+         }
 
-         // Remove existing markers if they are not in the new list
+         // Remove existing markers if they are not in the new list (unless they have an info window)
          for (i = 0; i < this.markers.length; i++)
          {
             if (this.markers[i].marker !== null)
             {
                ex = documentInList(this.markers[i].doc, items);
-               if (ex === null)
+               if (ex === null && !isSameMarker(this.markers[i].marker, this.selectedMarker))
                {
                   this.markers[i].marker.setMap(null);
                }
@@ -329,6 +343,7 @@
        */
       createMarker: function SiteGeotaggedContent_createMarker(map, doc)
       {
+         var me = this;
          var latLng = new google.maps.LatLng(doc.geolocation.latitude, doc.geolocation.longitude);
          var marker = new google.maps.Marker(
          {
@@ -358,6 +373,7 @@
          });
          google.maps.event.addListener(marker, 'click', function() {
             infowindow.open(map, marker);
+            me.selectedMarker = marker;
          });
          
          return { marker : marker, doc: doc };
