@@ -1,5 +1,5 @@
 <script type="text/javascript">//<![CDATA[
-   new Alfresco.DocumentGeographicInfo("${args.htmlid}").setMessages(
+   new Extras.DocumentGeographicInfo("${args.htmlid}").setMessages(
       ${messages}
    );
 //]]></script>
