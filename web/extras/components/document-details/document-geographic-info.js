@@ -1,8 +1,22 @@
 /**
+ * Copyright (C) 2010-2011 Share Extras contributors.
+ */
+
+/**
+* Extras root namespace.
+* 
+* @namespace Extras
+*/
+if (typeof Extras == "undefined" || !Extras)
+{
+   var Extras = {};
+}
+
+/**
  * Document geographic info component.
  * 
- * @namespace Alfresco
- * @class Alfresco.DocumentGeographicInfo
+ * @namespace Extras
+ * @class Extras.DocumentGeographicInfo
  */
 (function()
 {
@@ -20,12 +34,12 @@
     * DocumentGeographicInfo constructor.
     * 
     * @param {String} htmlId The HTML id of the parent element
-    * @return {Alfresco.DocumentGeographicInfo} The new DocumentGeographicInfo instance
+    * @return {Extras.DocumentGeographicInfo} The new DocumentGeographicInfo instance
     * @constructor
     */
-   Alfresco.DocumentGeographicInfo = function(htmlId)
+   Extras.DocumentGeographicInfo = function(htmlId)
    {
-      Alfresco.DocumentGeographicInfo.superclass.constructor.call(this, "Alfresco.DocumentGeographicInfo", htmlId);
+      Extras.DocumentGeographicInfo.superclass.constructor.call(this, "Extras.DocumentGeographicInfo", htmlId);
       
       /* Decoupled event listeners */
       YAHOO.Bubbling.on("documentDetailsAvailable", this.onDocumentDetailsAvailable, this);
@@ -33,7 +47,7 @@
       return this;
    };
    
-   YAHOO.extend(Alfresco.DocumentGeographicInfo, Alfresco.component.Base,
+   YAHOO.extend(Extras.DocumentGeographicInfo, Alfresco.component.Base,
    {
       /**
        * GMap object
