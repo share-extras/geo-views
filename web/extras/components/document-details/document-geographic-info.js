@@ -42,13 +42,58 @@ if (typeof Extras == "undefined" || !Extras)
       Extras.DocumentGeographicInfo.superclass.constructor.call(this, "Extras.DocumentGeographicInfo", htmlId);
       
       /* Decoupled event listeners */
-      YAHOO.Bubbling.on("documentDetailsAvailable", this.onDocumentDetailsAvailable, this);
+      YAHOO.Bubbling.on("metadataRefresh", this.doRefresh, this);
       
       return this;
    };
    
    YAHOO.extend(Extras.DocumentGeographicInfo, Alfresco.component.Base,
    {
+       /**
+        * Object container for initialization options
+        *
+        * @property options
+        * @type object
+        */
+       options:
+       {
+          /**
+           * Reference to the current document
+           *
+           * @property nodeRef
+           * @type string
+           * @default ""
+           */
+           nodeRef: "",
+
+          /**
+           * Current siteId, if any.
+           * 
+           * @property siteId
+           * @type string
+           * @default ""
+           */
+           siteId: "",
+           
+          /**
+           * ContainerId representing root container
+           *
+           * @property containerId
+           * @type string
+           * @default "documentLibrary"
+           */
+          containerId: "documentLibrary",
+          
+          /**
+           * JSON representation of document details
+           *
+           * @property documentDetails
+           * @type object
+           * @default null
+           */
+          documentDetails: null
+      },
+       
       /**
        * GMap object
        */
@@ -65,17 +110,19 @@ if (typeof Extras == "undefined" || !Extras)
       mapContainer: null,
       
       /**
-       * Event handler called when the "documentDetailsAvailable" event is received
+       * Event handler called when "onReady"
        *
-       * @method: onDocumentDetailsAvailable
+       * @method: onReady
        */
-      onDocumentDetailsAvailable: function DocumentGeographicInfo_onDocumentDetailsAvailable(layer, args)
+      onReady: function DocumentGeographicInfo_onReady(layer, args)
       {
-         var docData = args[1].documentDetails;
+         var docData = this.options.documentDetails;
          this.mapContainer = Dom.get(this.id + "-map");
 
-         if (typeof(docData.geolocation) === "object" &&
-               typeof(docData.geolocation.latitude) !== "undefined")
+         if (typeof(docData.item) === "object" &&
+               typeof(docData.item.node) === "object" &&
+               typeof(docData.item.node.properties) === "object" &&
+               typeof(docData.item.node.properties["cm:latitude"]) !== "undefined")
          {
             Dom.removeClass(this.id + "-body", "hidden");
             
@@ -98,9 +145,11 @@ if (typeof Extras == "undefined" || !Extras)
        * Initialise the map itself
        * @method initializeMap
        */
-      initializeMap: function SiteGeotaggedContent_initializeMap(doc)
+      initializeMap: function DocumentGeographicInfo_initializeMap(doc)
       {
-         var latLng = new google.maps.LatLng(doc.geolocation.latitude, doc.geolocation.longitude);
+         var latLng = new google.maps.LatLng(
+                 doc.item.node.properties["cm:latitude"], 
+                 doc.item.node.properties["cm:longitude"]);
          var myOptions = 
          {
             zoom: 10,
@@ -112,32 +161,23 @@ if (typeof Extras == "undefined" || !Extras)
          {
             position: latLng,
             map: this.map,
-            title: doc.fileName
+            title: this.msg("tooltip.gmaps", doc.item.fileName)
+         });
+         google.maps.event.addListener(this.marker, 'click', function() {
+            document.location.href = document.location.href.replace("/document-details", "/geographic-map");
          });
       },
-   
+      
       /**
-       * Update the map view
-       * @method updateMap
-       */
-      updateMap: function SiteGeotaggedContent_updateMap(doc)
+      * Refresh component in response to metadataRefresh event
+      *
+      * @method doRefresh
+      */
+      doRefresh: function DocumentGeographicInfo_doRefresh()
       {
-         // First clear any existing marker
-         if (this.marker != null)
-         {
-            this.marker.setMap(null);
-            this.marker = null;
-         }
-         // Then re-center the map
-         var latLng = new google.maps.LatLng(doc.geolocation.latitude, doc.geolocation.longitude);
-         this.map.panTo(latLng);
-         // Then add the new marker to the map
-         this.marker = new google.maps.Marker(
-         {
-            position: latLng,
-            map: this.map,
-            title: doc.fileName
-         });
+          YAHOO.Bubbling.unsubscribe("metadataRefresh", this.doRefresh);
+          this.refresh('extras/components/document-details/document-geographic-info?nodeRef={nodeRef}' + (this.options.siteId ? '&site={siteId}' : ''));
       }
+      
    });
 })();
