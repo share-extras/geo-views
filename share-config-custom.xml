@@ -1,0 +1,18 @@
+<alfresco-config>
+   
+   <config evaluator="string-compare" condition="DocLibCustom">   
+      <dependencies>
+         <css src="/extras/components/documentlibrary/geotag-action.css" />
+         <js src="/extras/components/documentlibrary/geotag-action.js" />
+      </dependencies> 
+   </config>
+	
+	<config evaluator="string-compare" condition="DocLibActions">
+      <actions>
+         <action id="org_sharextras_document-geotag" type="javascript" label="actions.document.geotag">
+            <param name="function">onActionGeotag</param>
+         </action>
+      </actions>
+   </config>
+
+</alfresco-config>

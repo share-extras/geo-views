@@ -1,0 +1,19 @@
+<extension>
+    <modules>
+        <module>
+            <id>Document Geographic Details Component</id>
+            <components>
+                <component>
+                    <region-id>document-tags</region-id>
+                    <source-id>document-details</source-id>
+                    <scope>template</scope>
+                    <sub-components>
+                        <sub-component id="org_sharextras_document-geographic-info" index="25">
+                            <url>/extras/components/document-details/document-geographic-info</url>
+                        </sub-component>
+                    </sub-components>
+                </component>
+            </components>
+        </module>
+    </modules>
+</extension>
