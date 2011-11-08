@@ -1,0 +1,5 @@
+<webscript>
+    <shortname>osm-map</shortname>
+    <description>OpenStreetMap Component</description>
+    <url>/extras/components/geographic/osm-map</url>
+</webscript>

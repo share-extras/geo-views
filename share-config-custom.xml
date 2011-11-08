@@ -22,7 +22,25 @@
             <!-- require aspect cm:geographic -->
             <evaluator>evaluator.doclib.action.googleMaps</evaluator>
          </action>
+         <!-- View on OpenStreetMap action definition -->
+         <action id="org_sharextras_document-view-osm" type="pagelink" label="actions.document.view-osm">
+            <param name="page">osm-map?nodeRef={node.nodeRef}</param>
+            <!-- aspect cm:geographic -->
+            <evaluator>evaluator.doclib.action.googleMaps</evaluator>
+         </action>
       </actions>
+   </config>
+   
+   <!-- Custom OSM Nominatim Endpoint, for reverse geolocation -->
+   <config evaluator="string-compare" condition="Remote">
+      <remote>
+         <endpoint>
+            <id>osm-nominatim</id>
+            <name>OpenStreetMap Nominatim</name>
+            <connector-id>http</connector-id>
+            <endpoint-url>http://nominatim.openstreetmap.org</endpoint-url>
+         </endpoint>
+      </remote>
    </config>
 
 </alfresco-config>
