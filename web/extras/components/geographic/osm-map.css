@@ -1,0 +1,44 @@
+.osm-map h1
+{
+   padding: 16px;
+}
+
+.osm-map .map
+{
+   width: 100%;
+}
+
+.osm-map-popup div.thumbnail
+{
+   height: 116px;
+   line-height: 100px;
+   text-align: center;
+}
+
+.osm-map-popup div.thumbnail img
+{
+   vertical-align: middle;
+}
+
+.osm-map-popup div.exif
+{
+   background-color: #f0f0f0;
+   border: 8px solid #f0f0f0;
+   border-radius: 8px;
+   margin: 0 auto;
+   overflow-y: auto;
+   width: 24em;
+}
+
+.osm-map-popup .exif th
+{
+   color: #444;
+} 
+.osm-map-popup .exif td
+{
+   color: #000;
+}
+.location-info
+{
+	padding-bottom: 1em;
+}
