@@ -2,15 +2,25 @@
    
    <config evaluator="string-compare" condition="DocLibCustom">   
       <dependencies>
+         <!-- Geotag action dependencies -->
          <css src="/extras/components/documentlibrary/geotag-action.css" />
          <js src="/extras/components/documentlibrary/geotag-action.js" />
+         <!-- View in Geohack dependencies -->
+         <js src="/extras/components/documentlibrary/view-geohack-action.js" />
       </dependencies> 
    </config>
 	
 	<config evaluator="string-compare" condition="DocLibActions">
       <actions>
+         <!-- Geotag action definition -->
          <action id="org_sharextras_document-geotag" type="javascript" label="actions.document.geotag">
             <param name="function">onActionGeotag</param>
+         </action>
+         <!-- View in Geohack action definition -->
+         <action id="org_sharextras_document-view-geohack" type="javascript" label="actions.document.view-geohack">
+            <param name="function">onActionViewGeohack</param>
+            <!-- require aspect cm:geographic -->
+            <evaluator>evaluator.doclib.action.googleMaps</evaluator>
          </action>
       </actions>
    </config>
