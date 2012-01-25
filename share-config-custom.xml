@@ -13,17 +13,20 @@
 	<config evaluator="string-compare" condition="DocLibActions">
       <actions>
          <!-- Geotag action definition -->
-         <action id="org_sharextras_document-geotag" type="javascript" label="actions.document.geotag">
+         <action id="org_sharextras_document-geotag" type="javascript" label="actions.document.geotag"
+                icon="../../../extras/components/documentlibrary/actions/org_sharextras_document-geotag">
             <param name="function">onActionGeotag</param>
          </action>
          <!-- View in Geohack action definition -->
-         <action id="org_sharextras_document-view-geohack" type="javascript" label="actions.document.view-geohack">
+         <action id="org_sharextras_document-view-geohack" type="javascript" label="actions.document.view-geohack"
+                icon="../../../extras/components/documentlibrary/actions/org_sharextras_document-view-geohack">
             <param name="function">onActionViewGeohack</param>
             <!-- require aspect cm:geographic -->
             <evaluator>evaluator.doclib.action.googleMaps</evaluator>
          </action>
          <!-- View on OpenStreetMap action definition -->
-         <action id="org_sharextras_document-view-osm" type="pagelink" label="actions.document.view-osm">
+         <action id="org_sharextras_document-view-osm" type="pagelink" label="actions.document.view-osm"
+                icon="../../../extras/components/documentlibrary/actions/org_sharextras_document-view-osm">
             <param name="page">osm-map?nodeRef={node.nodeRef}</param>
             <!-- aspect cm:geographic -->
             <evaluator>evaluator.doclib.action.googleMaps</evaluator>
