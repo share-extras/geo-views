@@ -120,8 +120,7 @@ if (typeof Extras.component == "undefined" || !Extras.component)
        */
       onReady: function OSMMap_onReady()
       {
-         var h = Dom.getXY("alf-ft")[1] - Dom.getXY(this.id + "-map")[1] - 50;
-         Dom.setStyle(this.id + "-map", "height", h + "px");
+          this.setMapHeight();
 
          // Asset data 
          this.recordData = this.options.documentDetails.item;
@@ -215,6 +214,12 @@ if (typeof Extras.component == "undefined" || !Extras.component)
              Dom.get(this.id + "-map").innerHTML = this.msg("error.badMapType");
          }
          
+         // Window resize behaviour
+         YAHOO.util.Event.addListener(window, "resize", function ()
+         {
+            this.setMapHeight();
+         }, this, true);
+         
          // Load location information from Nominatim, if enabled
          if (this.options.loadLocation)
          {
@@ -289,6 +294,17 @@ if (typeof Extras.component == "undefined" || !Extras.component)
 
          // Auto-open the info window
          infoWindow.open(map, marker);
+      },
+
+      /**
+       * Reset the map size based on the overall screen height
+       *
+       * @method setMapHeight
+       */
+      setMapHeight: function OSMMap_setMapHeight(e)
+      {
+          var h = Dom.getXY("alf-ft")[1] - Dom.getXY(this.id + "-map")[1] - 50;
+          Dom.setStyle(this.id + "-map", "height", h + "px");
       }
    });
 })();
