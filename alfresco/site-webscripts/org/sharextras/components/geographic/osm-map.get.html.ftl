@@ -10,6 +10,10 @@
    new Extras.component.OSMMap("${id}").setOptions(
    {
       documentDetails: ${documentDetailsJSON},
+      mapType: "${config.script["osm-map"].mapType?js_string}",
+      mapInitialZoom: "${config.script["osm-map"].mapInitialZoom?js_string}",
+      leafletTileUrl: "${(config.script["osm-map"].leafletTileUrl!'')?js_string}",
+      loadLocation: ${(config.script["osm-map"].loadLocation!true)?string}
    }).setMessages(${messages});
 //]]></script>
 
