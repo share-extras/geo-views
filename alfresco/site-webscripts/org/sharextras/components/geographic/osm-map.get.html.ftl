@@ -32,8 +32,8 @@
       <div class="exif">
          <table cellpadding="0" cellspacing="0" width="100%">
             <tbody>
-            <#list ["dateTimeOriginal.relativeTime", "pixelXDimension", "pixelYDimension", "exposureTime", "fNumber", "flash", "focalLength",
-               "isoSpeedRatings", "manufacturer", "model", "software", "orientation", "xResolution", "yResolution", "resolutionUnit"] as name>
+            <#list ["dateTimeOriginal.relativeTime", "exposureTime", "fNumber", "flash", "focalLength",
+               "isoSpeedRatings", "manufacturer", "model", "software"] as name>
                <@exif props name />
             </#list>
             </tbody>
