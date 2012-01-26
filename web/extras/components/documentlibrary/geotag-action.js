@@ -1,3 +1,7 @@
+function gmaps_init() {
+    // Do nothing
+}
+
 /**
  * Document library Geotag action
  * 
@@ -18,6 +22,14 @@
    var $html = Alfresco.util.encodeHTML,
       $combine = Alfresco.util.combinePaths;
 
+   // Async handler to bring in Google Maps scripts
+   Event.onDOMReady(function geotag_gmapsInit() {
+       var script = document.createElement("script");
+       script.type = "text/javascript";
+       script.src = "http://maps.google.com/maps/api/js?sensor=false&callback=gmaps_init";
+       document.body.appendChild(script);
+   });
+   
    /**
     * Geotag a document.
     *
