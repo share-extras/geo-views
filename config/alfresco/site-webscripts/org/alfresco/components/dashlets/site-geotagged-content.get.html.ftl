@@ -1,6 +1,6 @@
 <#macro formatNumber num><#if num?is_number>${num?c}<#elseif num?is_string>${num?replace(",", ".")?number?c}<#else>null</#if></#macro>
 <script type="text/javascript">//<![CDATA[
-   new Alfresco.dashlet.SiteGeotaggedContent("${args.htmlid}").setOptions(
+   var dashlet = new Alfresco.dashlet.SiteGeotaggedContent("${args.htmlid}").setOptions(
    {
       "siteId": "${page.url.templateArgs.site!""}",
       "componentId": "${instance.object.id}",
@@ -13,7 +13,18 @@
    }).setMessages(
       ${messages}
    );
-   new Alfresco.widget.DashletResizer("${args.htmlid}", "${instance.object.id}");
+   var resizer = new Alfresco.widget.DashletResizer("${args.htmlid}", "${instance.object.id}");
+   // Add end resize event handler
+   var timer = YAHOO.lang.later(1000, this, function(dashlet, resizer) {
+      if (resizer.widgets.resizer)
+      {
+         resizer.widgets.resizer.on("endResize", function(eventTarget)
+         {
+            dashlet.onEndResize(eventTarget.height);
+         }, dashlet, true);
+         timer.cancel();
+      }
+   }, [dashlet, resizer], true);
 //]]></script>
 
 <div class="dashlet map-dashlet">

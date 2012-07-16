@@ -452,6 +452,22 @@
             Event.preventDefault(e);
          }
          this.refreshMap();
+      },
+
+      /**
+       * YUI WIDGET EVENT HANDLERS
+       * Handlers for standard events fired from YUI widgets, e.g. "click"
+       */
+      
+      /**
+       * Event handler for dashlet resizing finished
+       * @method onEndResize
+       * @param height {int} New height in pixels
+       */
+      onEndResize: function SiteGeotaggedContent_onEndResize(height)
+      {
+         google.maps.event.trigger(this.map, 'resize');
+         this.setCenter.call(this, this.map.getCenter());
       }
    });
 })();
