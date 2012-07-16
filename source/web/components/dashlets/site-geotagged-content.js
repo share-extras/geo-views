@@ -310,7 +310,7 @@
          {
             var item = items[i];
             
-            if (item.nodeType == "cm:content" && item.geolocation)
+            if (item.geolocation)
             {
                ex = documentInList(item, this.markers);
                if (ex === null)

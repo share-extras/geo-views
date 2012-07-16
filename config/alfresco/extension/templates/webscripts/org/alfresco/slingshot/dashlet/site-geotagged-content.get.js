@@ -16,7 +16,7 @@ function main()
       return;
    }
    
-   var query = "PATH:\"" + site.node.qnamePath + "//*\" AND ASPECT:\"{http://www.alfresco.org/model/content/1.0}geographic\"";
+   var query = "PATH:\"" + site.node.qnamePath + "//*\" AND TYPE:\"{http://www.alfresco.org/model/content/1.0}content\" AND ASPECT:\"{http://www.alfresco.org/model/content/1.0}geographic\"";
    if (args.bb !== null && args.bb !== "")
    {
       var ba = args.bb.split(",");
