@@ -333,6 +333,9 @@
        */
       onDoclistFailed: function SiteGeotaggedContent_onDoclistFailed()
       {
+         Alfresco.util.PopupManager.displayMessage({
+            text: this.msg("error.loading")
+         });
       },
       
       /**
