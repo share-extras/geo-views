@@ -1,0 +1,5 @@
+<webscript>
+  <shortname>site-geotagged-content-config</shortname>
+  <description>Configuration dialog for Site Geotagged Content dashlet</description>
+  <url>/extras/modules/dashlets/site-geotagged-content/config</url>
+</webscript>

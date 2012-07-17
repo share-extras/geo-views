@@ -46,10 +46,10 @@
    /**
     * Preferences
     */
-   var PREFERENCES_DASHLET = "org.alfresco.share.dashlet",
-      PREF_ZOOM = PREFERENCES_DASHLET + ".siteGeotaggedContent.zoom",
-      PREF_CENTER = PREFERENCES_DASHLET + ".siteGeotaggedContent.center",
-      PREF_TYPE_ID = PREFERENCES_DASHLET + ".siteGeotaggedContent.mapTypeId";
+   var PREF_BASE = "org.sharextras.siteGeotaggedContent",
+      PREF_ZOOM = ".zoom",
+      PREF_CENTER = ".center",
+      PREF_TYPE_ID = ".mapTypeId";
 
 
    /**
@@ -87,6 +87,15 @@
          componentId: "",
 
          /**
+          * A unique ID for this map, persisted in dashlet config and so preserved if the dashlet is moved
+          *
+          * @property mapId
+          * @type String
+          * @default ""
+          */
+         mapId: "",
+
+         /**
           * ID of the current site
           * 
           * @property siteId
@@ -120,7 +129,16 @@
           * @type string
           * @default null
           */
-         mapTypeId: null
+         mapTypeId: null,
+
+         /**
+          * Whether user changes to zoom, center etc. should be persisted to user preferences
+          * 
+          * @property saveUserChanges
+          * @type boolean
+          * @default true
+          */
+         saveUserChanges: true
       },
 
       /**
@@ -170,8 +188,85 @@
          // Preferences service
          this.services.preferences = new Alfresco.service.Preferences();
          
+         // Generate the unique map ID, if it does not already exist. This is required to persist personal map settings, since the component ID might change
+         if (!this.options.mapId)
+         {
+            var mapId = this._randomString(16);
+            Alfresco.util.Ajax.jsonPost({
+               url: Alfresco.constants.URL_SERVICECONTEXT + "modules/dashlet/config/" + encodeURIComponent(this.options.componentId),
+               dataObj: {
+                  mapId: mapId
+               },
+               successCallback: {
+                  fn: function() {
+                     this.options.mapId = mapId;
+                  },
+                  scope: this
+               },
+               failureMessage: this.msg("error.saveMapId")
+            });
+         }
+         else
+         {
+            // Load zoom level, etc. if allowed and browser supports it
+            if (this._browserSupportsHtml5Storage() && this.options.saveUserChanges)
+            {
+               this._loadMapConfig();
+            }
+         }
+         
          // initialize google map
          this.refreshMap();
+      },
+      
+      /**
+       * Generate a random identifier
+       * 
+       * @method _randomString()
+       * @param length {int} length of string to generate
+       * @returns {String} The random string
+       * @private
+       */
+      _randomString: function SiteGeotaggedContent__randomString(length)
+      {
+         var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz'.split('');
+         var str = '';
+         for (var i = 0; i < length; i++)
+         {
+             str += chars[Math.floor(Math.random() * chars.length)];
+         }
+         return str;
+      },
+      
+      /**
+       * Load map parameters from browser storage
+       * 
+       * @method _loadMapConfig
+       */
+      _loadMapConfig: function SiteGeotaggedContent__loadMapConfig()
+      {
+         this.options.zoom = parseInt(window.localStorage[this._getLocalStorageKey(PREF_ZOOM)] || this.options.zoom);
+         this.options.mapTypeId = window.localStorage[this._getLocalStorageKey(PREF_TYPE_ID)] || this.options.mapTypeId;
+         if (window.localStorage[this._getLocalStorageKey(PREF_CENTER)])
+         {
+            var center = Alfresco.util.parseJSON(window.localStorage[this._getLocalStorageKey(PREF_CENTER)]);
+            if (center != null && typeof center == "object" && center.latitude && center.longitude)
+            {
+               this.options.center = center;
+            }
+         }
+      },
+      
+      /**
+       * Return the local storage key to be used for the specified value name
+       * @method _getLocalStorageKey
+       * @private
+       * @param key {String} local name of the parameter key
+       * @returns {String} Qualified key name suitable for use with browser storage
+       */
+      _getLocalStorageKey: function SiteGeotaggedContent__getLocalStorageKey(key)
+      {
+         return PREF_BASE + ".map." + this.options.mapId + key;
       },
       
       /**
@@ -310,7 +405,7 @@
          {
             var item = items[i];
             
-            if (item.nodeType == "cm:content" && item.geolocation)
+            if (item.geolocation)
             {
                ex = documentInList(item, this.markers);
                if (ex === null)
@@ -333,6 +428,9 @@
        */
       onDoclistFailed: function SiteGeotaggedContent_onDoclistFailed()
       {
+         Alfresco.util.PopupManager.displayMessage({
+            text: this.msg("error.loading")
+         });
       },
       
       /**
@@ -392,9 +490,19 @@
          if (this.options.zoom != zoom)
          {
             this.options.zoom = zoom;
-            if (noPersist !== true)
+            if (noPersist !== true && this.options.saveUserChanges)
             {
-               this.services.preferences.set(PREF_ZOOM, zoom);
+               if (this._browserSupportsHtml5Storage())
+               {
+                  if (this.options.mapId)
+                  {
+                     window.localStorage[this._getLocalStorageKey(PREF_ZOOM)] = zoom;
+                  }
+               }
+               else
+               {
+                  this.services.preferences.set(PREF_BASE + PREF_ZOOM, zoom);
+               }
             }
          }
       },
@@ -409,9 +517,21 @@
       setCenter: function SiteGeotaggedContent_setCenter(center, noPersist)
       {
          this.options.center = center;
-         if (noPersist !== true)
+         if (noPersist !== true && this.options.saveUserChanges)
          {
-            this.services.preferences.set(PREF_CENTER, { latitude: center.lat(), longitude: center.lng() });
+            var c = { latitude: center.lat() || center.latitude, longitude: center.lng() || center.longitude };
+            if (this._browserSupportsHtml5Storage())
+            {
+               if (this.options.mapId)
+               {
+                  window.localStorage[this._getLocalStorageKey(PREF_CENTER)] = 
+                     "{ \"latitude\": " + (center.lat() || center.latitude) + ", \"longitude\": " + (center.lng() || center.longitude) + " }";
+               }
+            }
+            else
+            {
+               this.services.preferences.set(PREF_BASE + PREF_CENTER, c);
+            }
          }
       },
 
@@ -425,9 +545,19 @@
       setTypeId: function SiteGeotaggedContent_setTypeId(id, noPersist)
       {
          this.options.mapTypeId = id;
-         if (noPersist !== true)
+         if (noPersist !== true && this.options.saveUserChanges)
          {
-            this.services.preferences.set(PREF_TYPE_ID, this.options.mapTypeId);
+            if (this._browserSupportsHtml5Storage())
+            {
+               if (this.options.mapId)
+               {
+                  window.localStorage[this._getLocalStorageKey(PREF_TYPE_ID)] = this.options.mapTypeId;
+               }
+            }
+            else
+            {
+               this.services.preferences.set(PREF_BASE + PREF_TYPE_ID, this.options.mapTypeId);
+            }
          }
       },
 
@@ -449,6 +579,106 @@
             Event.preventDefault(e);
          }
          this.refreshMap();
+      },
+      
+      /**
+       * Check if the web browser supports local storage
+       * 
+       * @property _browserSupportsHtml5Storage
+       * @returns {boolean} true if local storage is available, false otherwise
+       */
+      _browserSupportsHtml5Storage: function SiteGeotaggedContent__browserSupportsHtml5Storage()
+      {
+         try
+         {
+           return 'localStorage' in window && window['localStorage'] !== null;
+         }
+         catch (e)
+         {
+           return false;
+         }
+      },
+
+      /**
+       * YUI WIDGET EVENT HANDLERS
+       * Handlers for standard events fired from YUI widgets, e.g. "click"
+       */
+      
+      /**
+       * Event handler for dashlet resizing finished
+       * @method onEndResize
+       * @param height {int} New height in pixels
+       */
+      onEndResize: function SiteGeotaggedContent_onEndResize(height)
+      {
+         google.maps.event.trigger(this.map, 'resize');
+         this.setCenter.call(this, this.map.getCenter());
+      },
+
+      /**
+       * Configuration click handler
+       *
+       * @method onConfigClick
+       * @param e {object} HTML event
+       */
+      onConfigClick: function SiteGeotaggedContent_onConfigClick(e)
+      {
+         var actionUrl = Alfresco.constants.URL_SERVICECONTEXT + "modules/dashlet/config/" + encodeURIComponent(this.options.componentId);
+         
+         Event.stopEvent(e);
+         
+         if (!this.configDialog)
+         {
+            this.configDialog = new Alfresco.module.SimpleDialog(this.id + "-configDialog").setOptions(
+            {
+               width: "30em",
+               templateUrl: Alfresco.constants.URL_SERVICECONTEXT + "extras/modules/dashlets/site-geotagged-content/config", 
+               actionUrl: actionUrl,
+               onSuccess:
+               {
+                  fn: function SiteGeotaggedContent_onConfigFeed_callback(response)
+                  {
+                     this.options.saveUserChanges = Dom.get(this.configDialog.id + "-saveUserChangesChecked").checked;
+                  },
+                  scope: this
+               },
+               doSetupFormsValidation:
+               {
+                  fn: function SiteGeotaggedContent_doSetupForm_callback(form)
+                  {
+                     // Update text
+                     Dom.get(this.configDialog.id + "-center").innerHTML = $html(this.map.getCenter().toString());
+                     Dom.get(this.configDialog.id + "-zoom").innerHTML = $html(this.map.getZoom());
+                     Dom.get(this.configDialog.id + "-mapType").innerHTML = $html(this.map.getMapTypeId());
+                     // Update actual form fields
+                     Dom.get(this.configDialog.id + "-fieldLat").value = this.map.getCenter().lat();
+                     Dom.get(this.configDialog.id + "-fieldLng").value = this.map.getCenter().lng();
+                     Dom.get(this.configDialog.id + "-fieldZoom").value = this.map.getZoom();
+                     Dom.get(this.configDialog.id + "-fieldMapType").value = this.map.getMapTypeId();
+                     Dom.get(this.configDialog.id + "-saveUserChangesChecked").checked = this.options.saveUserChanges;
+                  },
+                  scope: this
+               },
+               doBeforeFormSubmit:
+               {
+                  fn: function SiteGeotaggedContent_doBeforeFormSubmit()
+                  {
+                     // Ensure checkbox state gets sent even if it is empty
+                     Dom.get(this.configDialog.id + "-saveUserChanges").value = 
+                        Dom.get(this.configDialog.id + "-saveUserChangesChecked").checked ? "true" : "false";
+                  },
+                  scope: this
+               }
+            });
+         }
+         else
+         {
+            this.configDialog.setOptions(
+            {
+               actionUrl: actionUrl
+            });
+         }
+         this.configDialog.show();
       }
    });
 })();
