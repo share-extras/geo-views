@@ -40,6 +40,10 @@ function main()
    model.userIsSiteManager = userIsSiteManager;
 
    model.preferences = preferences;
+   
+   model.defaultCenter = [53.592504809039376, -3.427734375];
+   model.defaultZoom = 3;
+   model.defaultType = "roadmap";
 }
 
 main();
