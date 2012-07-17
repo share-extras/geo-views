@@ -267,7 +267,7 @@
        */
       _getLocalStorageKey: function SiteGeotaggedContent__getLocalStorageKey(key)
       {
-         return PREF_BASE + ".map." + this.options.mapId + key;
+         return PREF_BASE + ".map." + this.options.mapId + "_" + Alfresco.constants.USERNAME + key;
       },
       
       /**
