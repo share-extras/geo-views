@@ -6,15 +6,18 @@
       "siteId": "${page.url.templateArgs.site!""}",
       "mapId": "${args.mapId!''}",
       "componentId": "${instance.object.id}",
-      "zoom": <#if preferences.zoom?exists && saveUserChanges>${preferences.zoom?number?c}<#elseif args.zoom?exists>${args.zoom?number?c}<#else>2</#if>,
+      "zoom": <#if preferences.zoom?exists && saveUserChanges>${preferences.zoom?number?c}<#elseif args.zoom?exists>${args.zoom?number?c}<#else>${defaultZoom?number?c}</#if>,
       "center": <#if preferences.center?exists && saveUserChanges>{
-         "latitude": <#if preferences.center.latitude?exists><@formatNumber preferences.center.latitude /><#else>null</#if>,
-         "longitude": <#if preferences.center.longitude?exists><@formatNumber preferences.center.longitude /><#else>null</#if>
+         "latitude": <#if preferences.center.latitude?exists><@formatNumber preferences.center.latitude /><#else><@formatNumber defaultCenter[0] /></#if>,
+         "longitude": <#if preferences.center.longitude?exists><@formatNumber preferences.center.longitude /><#else><@formatNumber defaultCenter[1] /></#if>
       }<#elseif args.lat?exists && args.lng?exists>{
          "latitude": <@formatNumber args.lat />,
          "longitude": <@formatNumber args.lng />
-      }<#else>null</#if>,
-      "mapTypeId": <#if preferences.mapTypeId?exists && saveUserChanges>"${preferences.mapTypeId}"<#elseif args.mapType?exists>"${args.mapType}"<#else>null</#if>,
+      }<#else>{
+         "latitude": <@formatNumber defaultCenter[0] />,
+         "longitude": <@formatNumber defaultCenter[1] />
+      }</#if>,
+      "mapTypeId": <#if preferences.mapTypeId?exists && saveUserChanges>"${preferences.mapTypeId?js_string}"<#elseif args.mapType?exists>"${args.mapType?js_string}"<#else>"${defaultType?js_string}"</#if>,
       "saveUserChanges": ${saveUserChanges?string}
    }).setMessages(
       ${messages}
