@@ -31,6 +31,31 @@
          timer.cancel();
       }
    }, [dashlet, resizer], true);
+   
+   var editDashletEvent = new YAHOO.util.CustomEvent("onDashletConfigure");
+   editDashletEvent.subscribe(dashlet.onConfigClick, dashlet, true);
+
+   new Alfresco.widget.DashletTitleBarActions("${args.htmlid}").setOptions(
+   {
+      actions:
+      [
+<#if userIsSiteManager>
+         {
+            cssClass: "edit",
+            eventOnClick: editDashletEvent,
+            tooltip: "${msg("dashlet.edit.tooltip")?js_string}"
+         },
+</#if>
+         {
+            cssClass: "help",
+            bubbleOnClick:
+            {
+               message: "${msg("dashlet.help")?js_string}"
+            },
+            tooltip: "${msg("dashlet.help.tooltip")?js_string}"
+         }
+      ]
+   });
 //]]></script>
 
 <div class="dashlet map-dashlet">
