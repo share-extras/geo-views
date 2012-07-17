@@ -2,6 +2,8 @@ const PREFERENCES_ROOT = "org.alfresco.share.dashlet.siteGeotaggedContent";
 
 function main()
 {
+   var s = new XML(config.script);
+   
    // Request the current user's preferences
    var result = remote.call("/api/people/" + stringUtils.urlEncode(user.name) + "/preferences?pf=" + PREFERENCES_ROOT);
    if (result.status == 200 && result != "{}")
@@ -41,9 +43,10 @@ function main()
 
    model.preferences = preferences;
    
-   model.defaultCenter = [53.592504809039376, -3.427734375];
-   model.defaultZoom = 3;
-   model.defaultType = "roadmap";
+   var defaultCenter = s.defaults.center.toString().split(",");
+   model.defaultCenter = [parseFloat(defaultCenter[0]), parseFloat(defaultCenter[1])];
+   model.defaultZoom = parseInt(s.defaults.zoom.toString());
+   model.defaultType = s.defaults.mapType.toString();
 }
 
 main();
