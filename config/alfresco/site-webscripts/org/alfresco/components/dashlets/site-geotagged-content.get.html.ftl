@@ -35,6 +35,11 @@
 
 <div class="dashlet map-dashlet">
    <div class="title">${msg("header.geotaggedContent")}</div>
+<#if userIsSiteManager>
+   <div class="toolbar">
+      <a class="theme-color-1" href="#" id="${args.htmlid}-configure-link">${msg("link.configure")}</a>
+   </div>
+</#if>
    <div class="body" <#if args.height??>style="height: ${args.height}px;"</#if>>
       <div id="${args.htmlid}-map" class="map-canvas"></div>
    </div>

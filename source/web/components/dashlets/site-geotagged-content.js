@@ -184,6 +184,7 @@
       onReady: function SiteGeotaggedContent_onReady()
       {
          this.mapContainer = Dom.get(this.id + "-map");
+         Event.addListener(this.id + "-configure-link", "click", this.onConfigClick, this, true);
 
          // Preferences service
          this.services.preferences = new Alfresco.service.Preferences();
