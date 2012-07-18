@@ -41,9 +41,6 @@ if (typeof Extras == "undefined" || !Extras)
    {
       Extras.DocumentGeographicInfo.superclass.constructor.call(this, "Extras.DocumentGeographicInfo", htmlId);
       
-      /* Decoupled event listeners */
-      YAHOO.Bubbling.on("metadataRefresh", this.doRefresh, this);
-      
       return this;
    };
    
@@ -125,14 +122,19 @@ if (typeof Extras == "undefined" || !Extras)
                typeof(docData.item.node.properties["cm:latitude"]) !== "undefined")
          {
             Dom.removeClass(this.id + "-body", "hidden");
-            
-            if (this.map == null)
+
+            // Load maps API if not already loaded
+            if (typeof google == "object" && typeof google.maps == "object")
             {
-               this.initializeMap(docData);
+               this.initializeMap(this.options.documentDetails);
             }
             else
             {
-               this.updateMap(docData);
+               // Async load the Google Maps API. Need to do this, as it breaks the YUI Loader otherwise
+               var script = document.createElement("script");
+               script.type = "text/javascript";
+               script.src = "http://maps.google.com/maps/api/js?sensor=false&callback=Extras.DocumentGeographicInfo.Callback";
+               document.body.appendChild(script);
             }
          }
          else
@@ -154,7 +156,8 @@ if (typeof Extras == "undefined" || !Extras)
          {
             zoom: 10,
             center: latLng,
-            mapTypeId: google.maps.MapTypeId.ROADMAP
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            useStaticMap: false
          }
          this.map = new google.maps.Map(this.mapContainer, myOptions);
          this.marker = new google.maps.Marker(
@@ -166,6 +169,9 @@ if (typeof Extras == "undefined" || !Extras)
          google.maps.event.addListener(this.marker, 'click', function() {
             document.location.href = document.location.href.replace("/document-details", "/geographic-map");
          });
+         
+         /* Decoupled event listener */
+         YAHOO.Bubbling.on("metadataRefresh", this.doRefresh, this);
       },
       
       /**
@@ -177,7 +183,26 @@ if (typeof Extras == "undefined" || !Extras)
       {
           YAHOO.Bubbling.unsubscribe("metadataRefresh", this.doRefresh);
           this.refresh('extras/components/document-details/document-geographic-info?nodeRef={nodeRef}' + (this.options.siteId ? '&site={siteId}' : ''));
+      },
+      
+      /**
+       * Event handler called when the Google Maps API has loaded
+       *
+       * @method onGoogleAPIReady
+       */
+      onGoogleAPIReady: function DocumentGeographicInfo_onGoogleAPIReady()
+      {
+         this.initializeMap(this.options.documentDetails);
       }
       
    });
 })();
+
+Extras.DocumentGeographicInfo.Callback = function()
+{
+   var component = Alfresco.util.ComponentManager.findFirst("Extras.DocumentGeographicInfo");
+   if (component)
+   {
+      component.onGoogleAPIReady();
+   }
+}
