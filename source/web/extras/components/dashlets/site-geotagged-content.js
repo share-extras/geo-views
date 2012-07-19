@@ -132,13 +132,31 @@
          mapTypeId: null,
 
          /**
+          * Whether the user should be allowed to make changes to zoom, center etc.
+          * 
+          * @property allowUserChanges
+          * @type boolean
+          * @default true
+          */
+         allowUserChanges: true,
+
+         /**
           * Whether user changes to zoom, center etc. should be persisted to user preferences
           * 
           * @property saveUserChanges
           * @type boolean
           * @default true
           */
-         saveUserChanges: true
+         saveUserChanges: true,
+
+         /**
+          * Is the user a manager of the dashboard, i.e. should they be able to make changes?
+          * 
+          * @property isManager
+          * @type boolean
+          * @default false
+          */
+         isManager: false
       },
 
       /**
@@ -288,13 +306,9 @@
          var myLatlng = this.options.center ? 
                new google.maps.LatLng(this.options.center.latitude, this.options.center.longitude) : 
                   new google.maps.LatLng(0, 0);
-         var myOptions = 
-         {
-            zoom: this.options.zoom > 0 ? this.options.zoom : 2,
+         this.map = new google.maps.Map(this.mapContainer, this.getMapOptions({
             center: myLatlng,
-            mapTypeId: this.options.mapTypeId != null ? this.options.mapTypeId : google.maps.MapTypeId.ROADMAP
-         }
-         this.map = new google.maps.Map(this.mapContainer, myOptions);
+         }));
 
          // Update map settings as user preferences
          // TODO: Persist settings as dashlet-specific prefs, not just user-specific
@@ -314,6 +328,31 @@
          google.maps.event.addListener(this.map, "bounds_changed", function() {
             me.refreshContent.call(me, null);
          });
+      },
+      
+      /**
+       * Get all available Google Maps config options
+       * 
+       * @method getMapOptions
+       * @param opts {object} additional values to add or override
+       * @returns {object} configuration as an object literal
+       */
+      getMapOptions: function SiteGeotaggedContent_getMapOptions(opts)
+      {
+         var changesAllowed = this.options.isManager || this.options.allowUserChanges,
+            mapOptions = 
+            {
+               zoom: this.options.zoom > 0 ? this.options.zoom : 2,
+               mapTypeId: this.options.mapTypeId != null ? this.options.mapTypeId : google.maps.MapTypeId.ROADMAP,
+               zoomControl: changesAllowed,
+               scaleControl: changesAllowed,
+               panControl: changesAllowed,
+               draggable: changesAllowed,
+               disableDoubleClickZoom: !changesAllowed,
+               mapTypeControl: changesAllowed,
+               streetViewControl: changesAllowed
+            };
+         return YAHOO.lang.merge(mapOptions, (opts || {}));
       },
       
       /**
@@ -638,7 +677,9 @@
                {
                   fn: function SiteGeotaggedContent_onConfigFeed_callback(response)
                   {
+                     this.options.allowUserChanges = Dom.get(this.configDialog.id + "-allowUserChangesChecked").checked;
                      this.options.saveUserChanges = Dom.get(this.configDialog.id + "-saveUserChangesChecked").checked;
+                     this.map.setOptions(this.getMapOptions());
                   },
                   scope: this
                },
@@ -656,6 +697,7 @@
                      Dom.get(this.configDialog.id + "-fieldZoom").value = this.map.getZoom();
                      Dom.get(this.configDialog.id + "-fieldMapType").value = this.map.getMapTypeId();
                      Dom.get(this.configDialog.id + "-saveUserChangesChecked").checked = this.options.saveUserChanges;
+                     Dom.get(this.configDialog.id + "-allowUserChangesChecked").checked = this.options.allowUserChanges;
                   },
                   scope: this
                },
@@ -663,9 +705,11 @@
                {
                   fn: function SiteGeotaggedContent_doBeforeFormSubmit()
                   {
-                     // Ensure checkbox state gets sent even if it is empty
+                     // Ensure checkbox states get sent even if it is empty
                      Dom.get(this.configDialog.id + "-saveUserChanges").value = 
                         Dom.get(this.configDialog.id + "-saveUserChangesChecked").checked ? "true" : "false";
+                     Dom.get(this.configDialog.id + "-allowUserChanges").value = 
+                        Dom.get(this.configDialog.id + "-allowUserChangesChecked").checked ? "true" : "false";
                   },
                   scope: this
                }

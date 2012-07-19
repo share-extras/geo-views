@@ -22,6 +22,12 @@
             </div>
          </div>
          <div class="yui-gd">
+            <div class="yui-u first"><label for="${args.htmlid}-allowUserChanges">${msg("label.allowUserChanges")}:</label></div>
+            <div class="yui-u">
+               <input type="checkbox" name="allowUserChanges" id="${args.htmlid}-allowUserChangesChecked" value="true" checked="checked" />
+            </div>
+         </div>
+         <div class="yui-gd">
             <div class="yui-u first"><label for="${args.htmlid}-saveUserChanges">${msg("label.saveUserChanges")}:</label></div>
             <div class="yui-u">
                <input type="checkbox" name="saveUserChangesChecked" id="${args.htmlid}-saveUserChangesChecked" value="true" checked="checked" />
@@ -35,6 +41,7 @@
          <input type="hidden" name="lng" id="${args.htmlid}-fieldLng" />
          <input type="hidden" name="zoom" id="${args.htmlid}-fieldZoom" />
          <input type="hidden" name="mapType" id="${args.htmlid}-fieldMapType" />
+         <input type="hidden" name="allowUserChanges" id="${args.htmlid}-allowUserChanges" />
          <input type="hidden" name="saveUserChanges" id="${args.htmlid}-saveUserChanges" />
       </form>
    </div>

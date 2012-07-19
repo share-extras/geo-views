@@ -1,5 +1,6 @@
 <#macro formatNumber num><#if num?is_number>${num?c}<#elseif num?is_string>${num?replace(",", ".")?number?c}<#else>null</#if></#macro>
 <#assign saveUserChanges=(args.saveUserChanges!'true')?string=='true' />
+<#assign allowUserChanges=(args.allowUserChanges!'true')?string=='true' />
 <script type="text/javascript">//<![CDATA[
 (function() {
    var dashlet = new Alfresco.dashlet.SiteGeotaggedContent("${args.htmlid}").setOptions(
@@ -19,7 +20,9 @@
          "longitude": <@formatNumber defaultCenter[1] />
       }</#if>,
       "mapTypeId": <#if preferences.mapTypeId?exists && saveUserChanges>"${preferences.mapTypeId?js_string}"<#elseif args.mapType?exists>"${args.mapType?js_string}"<#else>"${defaultType?js_string}"</#if>,
-      "saveUserChanges": ${saveUserChanges?string}
+      "saveUserChanges": ${saveUserChanges?string},
+      "allowUserChanges": ${allowUserChanges?string},
+      "isManager": ${userIsSiteManager?string}
    }).setMessages(
       ${messages}
    );
