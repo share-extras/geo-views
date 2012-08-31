@@ -14,7 +14,7 @@ function main()
          dTO = properties["exif:dateTimeOriginal"],
          eT = properties["exif:exposureTime"];
 
-      if (dTO)
+      if (dTO && typeof AlfrescoUtil.relativeTime == "function")
       {
          properties["exif:dateTimeOriginal"].relativeTime = AlfrescoUtil.relativeTime(dTO.iso8601);
       }
