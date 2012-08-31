@@ -192,22 +192,17 @@ if (typeof Extras.component == "undefined" || !Extras.component)
          else if (this.options.mapType == "leaflet" && typeof L == "object")
          {
              // set up the map
-             var map = new L.Map(this.id + "-map");
+             var map = new L.Map(this.id + "-map").setView([properties["cm:latitude"], properties["cm:longitude"]], this.options.mapInitialZoom);
 
              // create the tile layer with correct attribution
-             var osm = new L.TileLayer(this.options.leafletTileUrl, {attribution: this.msg("label.copyright.osm")});
-             var latlng = new L.LatLng(properties["cm:latitude"], properties["cm:longitude"]);
-
-             // start the map centred on the icon
-             map.setView(latlng, this.options.mapInitialZoom);
-             map.addLayer(osm);
+             L.tileLayer(this.options.leafletTileUrl, {
+                attribution: this.msg("label.copyright.osm")
+             }).addTo(map);
              
              // create a marker in the given location and add it to the map
+             L.marker([properties["cm:latitude"], properties["cm:longitude"]]).addTo(map)
+                .bindPopup(Dom.get(this.id + "-info").innerHTML).openPopup();
              var marker = new L.Marker(latlng);
-             map.addLayer(marker);
-
-             // attach a given HTML content to the marker and immediately open it
-             marker.bindPopup(Dom.get(this.id + "-info").innerHTML, {}).openPopup();
          }
          else
          {
