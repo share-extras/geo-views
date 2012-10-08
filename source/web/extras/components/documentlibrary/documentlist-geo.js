@@ -436,13 +436,13 @@ if (typeof Extras == "undefined" || !Extras)
          // when zooming leaflet fires both events, which leads to an exception being thrown from the repo
          // therefore we must first check that the other event is not 'in progress' before attempting the save
          
-         map.on('zoomend', function(e) {
+         function savePrefs() {
             if (this.savingPrefs == false)
             {
                this.savingPrefs = true;
                var latlng = map.getCenter();
-               Alfresco.logger.debug("Set " + PREF_ZOOMLEVEL + " to " + map.getZoom());
-               scope.services.preferences.set(PREF_ZOOMLEVEL, "" + map.getZoom(), {
+               Alfresco.logger.debug("Set " + PREFERENCES_DOCLIST + " to " + map.getZoom());
+               scope.services.preferences.set(PREFERENCES_DOCLIST, { zoomLevel: map.getZoom(), center: latlng.lat + "," + latlng.lng }, {
                   successCallback: {
                      fn: function() {
                         this.savingPrefs = false;
@@ -457,29 +457,14 @@ if (typeof Extras == "undefined" || !Extras)
                   }
                });
             }
+         };
+         
+         map.on('zoomend', function(e) {
+            savePrefs.call(this);
          }, this);
          
          map.on('moveend', function(e) {
-            if (this.savingPrefs == false)
-            {
-               this.savingPrefs = true;
-               var latlng = map.getCenter();
-               Alfresco.logger.debug("Set " + PREF_CENTER + " to " + latlng.lat + "," + latlng.lng);
-               scope.services.preferences.set(PREF_CENTER, latlng.lat + "," + latlng.lng, {
-                  successCallback: {
-                     fn: function() {
-                        this.savingPrefs = false;
-                     },
-                     scope: this
-                  },
-                  failureCallback: {
-                     fn: function() {
-                        this.savingPrefs = false;
-                     },
-                     scope: this
-                  }
-               });
-            }
+            savePrefs.call(this);
          }, this);
 
          this.map = map;
