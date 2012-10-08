@@ -1,0 +1,14 @@
+<extension>
+    <modules>
+        <module>
+            <id>Document List Geographic View</id>
+            <auto-deploy>true</auto-deploy>
+            <customizations>
+                <customization>
+                    <targetPackageRoot>org.alfresco</targetPackageRoot>
+                    <sourcePackageRoot>org.sharextras.customization.doclib-geo-view</sourcePackageRoot>
+                </customization>
+            </customizations>
+        </module>
+    </modules>
+</extension>

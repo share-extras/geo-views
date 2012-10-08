@@ -1,0 +1,74 @@
+.doclist .simple-detailed .geo-view span.first-child
+{
+    background-image: url(images/large-view-off-16.png);
+}
+.doclist .simple-detailed .geo-view.yui-button-checked span.first-child
+{
+    background-image: url(images/large-view-on-16.png);
+}
+.doclist .map
+{
+	height: 400px;
+}
+/* Hide the datatable */
+.doclist .documents-geo table
+{
+	display: none;
+}
+.doclist .thumbnail.documents-geo {
+    height: 200px !important;
+    width: 200px !important;
+}
+.doclist .thumbnail.documents-geo img {
+    max-width: 280px;
+}
+.doclist .folder.documents-geo {
+    height: 200px !important;
+    width: 200px !important;
+}
+.doclist .folder.documents-geo img {
+    width: 128px;
+}
+
+/* Details */
+.alf-geo-item
+{
+    display: none;
+}
+
+.alf-geo-item .alf-detail
+{
+    visibility: hidden;
+    display: none;
+}
+.doclist .documents-geo .alf-detail .alf-detail-thumbnail
+{
+    padding: 0 20px;
+}
+.doclist .documents-geo .alf-detail .alf-detail-thumbnail img
+{
+    max-width: 300px;
+    max-height: 220px;
+}
+.doclist .documents-geo .alf-detail .detail span.item-social:last-child {
+    margin-right: 0;
+}
+
+.doclist .documents-geo a.action-link span,
+.doclist .documents-geo a.simple-link span
+{
+   display: none;
+}
+.doclist .documents-geo div.more-actions div
+{
+   float: none;
+}
+.doclist .documents-geo div.more-actions a.action-link span,
+.doclist .documents-geo div.more-actions a.simple-link span
+{
+   display: block;
+}
+.doclist .action-set.geo div
+{
+   float: left;
+}
