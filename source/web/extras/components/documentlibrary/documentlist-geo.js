@@ -552,7 +552,9 @@ if (typeof Extras == "undefined" || !Extras)
          // create a marker in the given location and add it to the map
          if (properties["cm:latitude"] && properties["cm:longitude"])
          {
-            var marker = L.marker([properties["cm:latitude"], properties["cm:longitude"]]).addTo(this.map);
+            var marker = L.marker([properties["cm:latitude"], properties["cm:longitude"]], {
+               title: record.displayName
+            }).addTo(this.map);
             marker.bindPopup(Dom.get(scope.id + '-details-' + galleryItemId), { width: 400, maxWidth: 400 });
             Alfresco.logger.debug("Has geo data");
             this.markers.push(marker);
