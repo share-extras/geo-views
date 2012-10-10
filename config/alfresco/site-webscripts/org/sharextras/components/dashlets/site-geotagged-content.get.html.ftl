@@ -3,7 +3,7 @@
 <#assign allowUserChanges=(args.allowUserChanges!'true')?string=='true' />
 <script type="text/javascript">//<![CDATA[
 (function() {
-   var dashlet = new Alfresco.dashlet.SiteGeotaggedContent("${args.htmlid}").setOptions(
+   var dashlet = new Extras.dashlet.LeafletSiteGeotaggedContent("${args.htmlid}").setOptions(
    {
       "siteId": "${page.url.templateArgs.site!""}",
       "mapId": "${args.mapId!''}",
