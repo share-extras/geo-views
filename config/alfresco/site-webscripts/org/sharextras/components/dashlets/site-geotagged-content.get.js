@@ -47,6 +47,24 @@ function main()
    model.defaultCenter = [parseFloat(defaultCenter[0]), parseFloat(defaultCenter[1])];
    model.defaultZoom = parseInt(s.defaults.zoom.toString());
    model.defaultType = s.defaults.mapType.toString();
+   
+   /*
+    * Use a 4.2-style object to pass in info about the name of the client-side map widget and options.
+    * 
+    * Note that not all options are set here, since the Freemarker template has not yet been converted 
+    * to the new style. This is in order to preserve compatibility with 4.0 and 4.1.
+    */
+   var mapWidget = {
+      // Name of the JS component to use for the dashlet. Use to switch between Leaflet and GMaps.
+      //name: "Extras.dashlet.GMapsSiteGeotaggedContent",
+      name: "Extras.dashlet.LeafletSiteGeotaggedContent",
+      options: {
+         // Use OSM by default for Leaflet tiles
+         leafletTileUrl: "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+      }
+   };
+   
+   model.widgets = [ mapWidget ];
 }
 
 main();

@@ -3,7 +3,7 @@
 <#assign allowUserChanges=(args.allowUserChanges!'true')?string=='true' />
 <script type="text/javascript">//<![CDATA[
 (function() {
-   var dashlet = new Extras.dashlet.LeafletSiteGeotaggedContent("${args.htmlid}").setOptions(
+   var dashlet = new ${widgets[0].name}("${args.htmlid}").setOptions(
    {
       "siteId": "${page.url.templateArgs.site!""}",
       "mapId": "${args.mapId!''}",
@@ -22,7 +22,8 @@
       "mapTypeId": <#if preferences.mapTypeId?exists && saveUserChanges>"${preferences.mapTypeId?js_string}"<#elseif args.mapType?exists>"${args.mapType?js_string}"<#else>"${defaultType?js_string}"</#if>,
       "saveUserChanges": ${saveUserChanges?string},
       "allowUserChanges": ${allowUserChanges?string},
-      "isManager": ${userIsSiteManager?string}
+      "isManager": ${userIsSiteManager?string},
+      "leafletTileUrl": "${widgets[0].options.leafletTileUrl?js_string}"
    }).setMessages(
       ${messages}
    );
