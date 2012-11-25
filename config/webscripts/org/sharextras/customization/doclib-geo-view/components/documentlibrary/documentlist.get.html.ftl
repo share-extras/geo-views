@@ -1,4 +1,8 @@
 <@markup id="customDocLibView" target="documentListContainer" action="after">
+   <div id="${args.htmlid}-geo" class="alf-geo documents"></div>
+   <div id="${args.htmlid}-geo-empty" class="hidden">
+      <div class="yui-dt-liner"></div>
+   </div>
    <div id="${args.htmlid}-geo-item-template" class="alf-geo-item hidden">
       <div class="alf-geo-item-thumbnail">
          <div class="alf-header">

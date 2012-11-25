@@ -55,6 +55,9 @@ if (typeof Extras == "undefined" || !Extras)
    Extras.DocumentListGeoViewRenderer = function(name)
    {
       Extras.DocumentListGeoViewRenderer.superclass.constructor.call(this, name);
+      this.parentElementIdSuffix = "-geo";
+      this.parentElementEmptytIdSuffix = "-geo-empty";
+      this.rowClassName = "alf-geo-item";
       // Defaults to large but we'll copy the metadata from detailed view
       this.metadataBannerViewName = "detailed";
       this.metadataLineViewName = "detailed";
@@ -66,7 +69,7 @@ if (typeof Extras == "undefined" || !Extras)
    /**
     * Extend from Alfresco.DocumentListViewRenderer
     */
-   YAHOO.extend(Extras.DocumentListGeoViewRenderer, Alfresco.DocumentListViewRenderer,
+   YAHOO.extend(Extras.DocumentListGeoViewRenderer, Alfresco.DocumentListGalleryViewRenderer,
    {
       /**
        * Object container for initialization options
@@ -191,181 +194,12 @@ if (typeof Extras == "undefined" || !Extras)
       }
    };
    
-   /**
-    * Gets the row item's detail popup panel element from the given row item
-    *
-    * @method getRowItemDetailElement
-    * @param rowItem {HTMLElement} The row item object
-    * @return {HTMLElement} the row item detail element
-    */
-   Extras.DocumentListGeoViewRenderer.prototype.getRowItemDetailElement = function DL_GVR_getRowItemDetailElement(rowItem)
-   {
-      if (rowItem != null)
-      {
-         var galleryItemDetailElement = Dom.getChildren(rowItem)[1];
-         // YUI may have added its container
-         if (Dom.hasClass(galleryItemDetailElement, 'yui-panel-container'))
-         {
-            galleryItemDetailElement = Dom.getFirstChild(galleryItemDetailElement);
-         }
-         return galleryItemDetailElement;
-      }
-   };
-   
-   /**
-    * Gets the row item's detail description element from the given row item
-    *
-    * @method getRowItemDetailDescriptionElement
-    * @param rowItem {HTMLElement} The row item object
-    * @return {HTMLElement} the row item detail description element
-    */
-   Extras.DocumentListGeoViewRenderer.prototype.getRowItemDetailDescriptionElement = function DL_GVR_getRowItemDetailDescriptionElement(rowItem)
-   {
-      if (rowItem != null)
-      {
-         var galleryItemDetailDiv = this.getRowItemDetailElement(rowItem);
-         return Dom.getChildren(Dom.getFirstChild(galleryItemDetailDiv))[3];
-      }
-   };
-   
-   /**
-    * Gets the row item's detail thumbnail element from the given row item
-    *
-    * @method getRowItemDetailThumbnailElement
-    * @param rowItem {HTMLElement} The row item object
-    * @return {HTMLElement} the row item detail thumbnail element
-    */
-   Extras.DocumentListGeoViewRenderer.prototype.getRowItemDetailThumbnailElement = function DL_GVR_getRowItemDetailThumbnailElement(rowItem)
-   {
-      if (rowItem != null)
-      {
-         var galleryItemDetailDiv = this.getRowItemDetailElement(rowItem);
-         return Dom.getFirstChild(Dom.getFirstChild(galleryItemDetailDiv));
-      }
-   };
-   
-   /**
-    * Gets the row item's thumbnail element from the given row item
-    *
-    * @method getRowItemThumbnailElement
-    * @param rowItem {HTMLElement} The row item object
-    * @return {HTMLElement} the row item thumbnail element
-    */
-   Extras.DocumentListGeoViewRenderer.prototype.getRowItemThumbnailElement = function DL_GVR_getRowItemThumbnailElement(rowItem)
-   {
-      if (rowItem != null)
-      {
-         return Dom.getFirstChild(rowItem);
-      }
-   };
-   
-   /**
-    * Gets the row item's header element from the given row item
-    *
-    * @method getRowItemHeaderElement
-    * @param rowItem {HTMLElement} The row item object
-    * @return {HTMLElement} the row item header element
-    */
-   Extras.DocumentListGeoViewRenderer.prototype.getRowItemHeaderElement = function DL_GVR_getRowItemHeaderElement(rowItem)
-   {
-      if (rowItem != null)
-      {
-         var galleryItemThumbnailDiv = this.getRowItemThumbnailElement(rowItem);
-         return Dom.getFirstChild(galleryItemThumbnailDiv);
-      }
-   };
-   
-   /**
-    * Gets the row item's selection element from the given row item
-    *
-    * @method getRowItemSelectElement
-    * @param rowItem {HTMLElement} The row item object
-    * @return {HTMLElement} the row item selection element
-    */
-   Extras.DocumentListGeoViewRenderer.prototype.getRowItemSelectElement = function DL_GVR_getRowItemSelectElement(rowItem)
-   {
-      if (rowItem != null)
-      {
-         var galleryItemHeaderElement = this.getRowItemHeaderElement(rowItem);
-         return Dom.getFirstChild(galleryItemHeaderElement);
-      }
-   };
-   
-   /**
-    * Gets the row item's label element from the given row item
-    *
-    * @method getRowItemLabelElement
-    * @param rowItem {HTMLElement} The row item object
-    * @return {HTMLElement} the row item label element
-    */
-   Extras.DocumentListGeoViewRenderer.prototype.getRowItemLabelElement = function DL_GVR_getRowItemLabelElement(rowItem)
-   {
-      if (rowItem != null)
-      {
-         var galleryItemThumbnailDiv = this.getRowItemThumbnailElement(rowItem);
-         return Dom.getChildren(galleryItemThumbnailDiv)[1];
-      }
-   };
-   
-   /**
-    * Gets the row item's status element from the given row item
-    *
-    * @method getRowItemStatusElement
-    * @param rowItem {HTMLElement} The row item object
-    * @return {HTMLElement} the row item status element
-    */
-   Extras.DocumentListGeoViewRenderer.prototype.getRowItemStatusElement = function DL_GVR_getRowItemStatusElement(rowItem)
-   {
-      if (rowItem != null)
-      {
-         var galleryItemDetailDiv = this.getRowItemDetailElement(rowItem);
-         return Dom.getChildren(Dom.getFirstChild(galleryItemDetailDiv))[1];
-      }
-   };
-   
-   /**
-    * Gets the row item's actions element from the given row item
-    *
-    * @method getRowItemActionsElement
-    * @param rowItem {HTMLElement} The row item object
-    * @return {HTMLElement} the row item actions element
-    */
-   Extras.DocumentListGeoViewRenderer.prototype.getRowItemActionsElement = function DL_GVR_getRowItemActionsElement(rowItem)
-   {
-      if (rowItem != null)
-      {
-         var galleryItemDetailDiv = this.getRowItemDetailElement(rowItem);
-         return Dom.getChildren(Dom.getFirstChild(galleryItemDetailDiv))[2];
-      }
-   };
-   
    // Override some of the standard ViewRenderer methods
-   
-   Extras.DocumentListGeoViewRenderer.prototype.getDataTableRecordIdFromRowElement = function DL_GVR_getDataTableRecordIdFromRowElement(scope, rowElement)
-   {
-      var elementId = Extras.DocumentListGeoViewRenderer.superclass.getDataTableRecordIdFromRowElement.call(this, scope, rowElement);
-      if (elementId != null)
-      {
-         return elementId.replace(scope.id + '-gallery-item-', '');
-      }
-   };
-   
-   Extras.DocumentListGeoViewRenderer.prototype.getRowElementFromDataTableRecord = function DL_GVR_getRowElementFromDataTableRecord(scope, oRecord)
-   {
-      var galleryItemId = this.getRowItemId(oRecord);
-      // Yahoo.util.Dom.get does not work here for some reason
-      return document.getElementById(galleryItemId);
-   };
-   
-   Extras.DocumentListGeoViewRenderer.prototype.getRowSelectElementFromDataTableRecord = function DL_GVR_getRowSelectElementFromDataTableRecord(scope, oRecord)
-   {
-      var selectId = this.getRowItemSelectId(oRecord);
-      return Dom.get(selectId);
-   };
    
    Extras.DocumentListGeoViewRenderer.prototype.setupRenderer = function DL_GVR_setupRenderer(scope)
    {
-      Extras.DocumentListGeoViewRenderer.superclass.setupRenderer.call(this, scope);
+      //Extras.DocumentListGeoViewRenderer.superclass.superclass.setupRenderer.call(this, scope);
+      Alfresco.DocumentListGalleryViewRenderer.superclass.setupRenderer.call(this, scope);
       
       this.documentList = scope;
       
@@ -565,99 +399,7 @@ if (typeof Extras == "undefined" || !Extras)
       }, scope, true);*/
    };
    
-   Extras.DocumentListGeoViewRenderer.prototype.getThumbnail = function DL_GVR_getThumbnail(scope, elCell, oRecord, oColumn, oData, imgIdSuffix, renditionName)
-   {
-      if (imgIdSuffix == null)
-      {
-         imgIdSuffix = "-hidden";
-      }
-      if (renditionName == null)
-      {
-         renditionName = "imgpreview";
-      }
-      
-      var record = oRecord.getData(),
-         node = record.jsNode,
-         properties = node.properties,
-         name = record.displayName,
-         isContainer = node.isContainer,
-         isLink = node.isLink,
-         extn = name.substring(name.lastIndexOf(".")),
-         imgId = node.nodeRef.nodeRef + imgIdSuffix, // DD added
-         imgHtml;
-      
-      if (isContainer)
-      {
-         imgHtml = '<img id="' + imgId + '" class="alf-gallery-item-thumbnail-img" src="' + Alfresco.constants.URL_RESCONTEXT + 'mediamanagement/components/documentlibrary/images/folder-256.png" />';
-      }
-      else
-      {
-         imgHtml = '<img id="' + imgId + '" class="alf-gallery-item-thumbnail-img" src="' + Alfresco.DocumentList.generateThumbnailUrl(record, renditionName) + '" alt="' + $html(extn) + '" title="' + $html(name) + '" />';
-      }
-      return { id: imgId, html: imgHtml, isContainer: isContainer, isLink: isLink };
-   };
-   
-   /**
-    * Render a thumbnail for a given oRecord
-    */
-   Extras.DocumentListGeoViewRenderer.prototype.renderCellThumbnail = function DL_GVR_renderCellThumbnail(scope, elCell, oRecord, oColumn, oData, imgIdSuffix, renditionName)
-   {
-      var containerTarget; // This will only get set if thumbnail represents a container
-      
-      var thumbnail = this.getThumbnail(scope, elCell, oRecord, oColumn, oData, imgIdSuffix, renditionName);
-
-      // Just add the data table thumbnail once
-      if (!document.getElementById(thumbnail.id))
-      {
-         if (thumbnail.isContainer)
-         {
-            elCell.innerHTML += '<span class="folder">' + (thumbnail.isLink ? '<span class="link"></span>' : '') + (scope.dragAndDropEnabled ? '<span class="droppable"></span>' : '') + thumbnail.html;
-            containerTarget = new YAHOO.util.DDTarget(thumbnail.id); // Make the folder a target
-         }
-         else
-         {
-            elCell.innerHTML += (thumbnail.isLink ? '<span class="link"></span>' : '') + thumbnail.html;
-         }
-      }
-   };
-   
-   Extras.DocumentListGeoViewRenderer.prototype.renderCellStatus = function DL_GVR_renderCellStatus(scope, elCell, oRecord, oColumn, oData)
-   {
-      Alfresco.DocumentListGalleryViewRenderer.superclass.renderCellStatus.call(this, scope, elCell, oRecord, oColumn, oData);
-      var galleryItem = this.getRowItem(oRecord, elCell);
-      // Check for null galleryItem due to ALF-15529
-      if (galleryItem != null)
-      {
-         // Copy status
-         var galleryItemStatusElement = this.getRowItemStatusElement(galleryItem).innerHTML = elCell.innerHTML;
-         // Clear out the table cell so there's no conflicting HTML IDs
-         elCell.innerHTML = '';
-      }
-   };
-   
-   Extras.DocumentListGeoViewRenderer.prototype.renderCellDescription = function DL_GVR_renderCellDescription(scope, elCell, oRecord, oColumn, oData)
-   {
-      Alfresco.DocumentListGalleryViewRenderer.superclass.renderCellDescription.call(this, scope, elCell, oRecord, oColumn, oData);
-      var galleryItem = this.getRowItem(oRecord, elCell);
-      // Check for null galleryItem due to ALF-15529
-      if (galleryItem != null)
-      {
-         // Copy description
-         var galleryItemDetailDescriptionElement = this.getRowItemDetailDescriptionElement(galleryItem).innerHTML = elCell.innerHTML;
-         // Clear out the table cell so there's no conflicting HTML IDs
-         elCell.innerHTML = '';
-         // Add a simple display label
-         this.getRowItemLabelElement(galleryItem).innerHTML = 
-            Alfresco.DocumentList.generateFileFolderLinkMarkup(scope, oRecord.getData()) + $html(oRecord.getData().displayName) + '</a>';
-         var galleryItemDetailThumbnailElement = this.getRowItemDetailThumbnailElement(galleryItem);
-         // Only set panel thumbnail if it's currently empty
-         if (galleryItemDetailThumbnailElement.innerHTML == '')
-         {
-            var thumbnail = this.getThumbnail(scope, elCell, oRecord, oColumn, oData, '-detail');
-            this.getRowItemDetailThumbnailElement(galleryItem).innerHTML = thumbnail.html;
-         }
-      }
-   };
+   // TODO Need renderCellSelected()?
    
    /*
    Extras.DocumentListGeoViewRenderer.prototype.renderCellThumbnail = function DL_GVR_renderCellThumbnail(scope, elCell, oRecord, oColumn, oData, imgIdSuffix)
