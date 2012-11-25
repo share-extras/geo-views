@@ -212,7 +212,6 @@ if (typeof Extras == "undefined" || !Extras)
    
    Extras.DocumentListGeoViewRenderer.prototype.setupRenderer = function DL_GVR_setupRenderer(scope)
    {
-      //Extras.DocumentListGeoViewRenderer.superclass.superclass.setupRenderer.call(this, scope);
       Alfresco.DocumentListGalleryViewRenderer.superclass.setupRenderer.call(this, scope);
       
       this.documentList = scope;
@@ -271,57 +270,16 @@ if (typeof Extras == "undefined" || !Extras)
          {
             center = [51, 0];
          }
-
-         // set up the map
-         var map = new L.Map(mapId).setView([center[0], center[1]], this.zoomLevel);
          
-         // create the tile layer with correct attribution
-         L.tileLayer(this.options.leafletTileUrl, {
-            attribution: scope.msg("label.copyright.osm")
-         }).addTo(map);
-         
-         // save map position and zoom levels
-         // when zooming leaflet fires both events, which leads to an exception being thrown from the repo
-         // therefore we must first check that the other event is not 'in progress' before attempting the save
-         
-         function savePrefs() {
-            if (this.savingPrefs == false)
-            {
-               this.savingPrefs = true;
-               var latlng = map.getCenter();
-               Alfresco.logger.debug("Set " + PREFERENCES_DOCLIST + " to " + map.getZoom());
-               scope.services.preferences.set(PREFERENCES_DOCLIST, { zoomLevel: map.getZoom(), center: latlng.lat + "," + latlng.lng }, {
-                  successCallback: {
-                     fn: function() {
-                        this.savingPrefs = false;
-                     },
-                     scope: this
-                  },
-                  failureCallback: {
-                     fn: function() {
-                        this.savingPrefs = false;
-                     },
-                     scope: this
-                  }
-               });
+         this._renderMap(scope, mapId, {
+            center: {
+               lat: center[0],
+               lng: center[1]
             }
-         };
-         
-         map.on('zoomend', function(e) {
-            savePrefs.call(this);
-         }, this);
-         
-         map.on('moveend', function(e) {
-            savePrefs.call(this);
-         }, this);
-
-         this.map = map;
+         });
       }
       
-      for (var i = 0; i < this.markers.length; i++)
-      {
-         this.map.removeLayer(this.markers[i]);
-      }
+      this._removeAllMarkers();
       
       var galleryItemTemplate = Dom.get(scope.id + '-geo-item-template'),
          galleryItem = null;
@@ -342,9 +300,6 @@ if (typeof Extras == "undefined" || !Extras)
          var galleryItemDetailDiv = this.getRowItemDetailElement(galleryItem);
          var galleryItemActionsDiv = this.getRowItemActionsElement(galleryItem);
          
-         // Set the item header id
-         //galleryItemHeaderDiv.setAttribute('id', scope.id + '-item-header-' + oRecord.getId());
-         
          // Suffix of the content actions div id must match the onEventHighlightRow target id
          galleryItemActionsDiv.setAttribute('id', scope.id + '-actions-' + galleryItemId);
 
@@ -356,14 +311,129 @@ if (typeof Extras == "undefined" || !Extras)
          // create a marker in the given location and add it to the map
          if (properties["cm:latitude"] && properties["cm:longitude"])
          {
-            var marker = L.marker([properties["cm:latitude"], properties["cm:longitude"]], {
-               title: record.displayName
-            }).addTo(this.map);
-            marker.bindPopup(Dom.get(scope.id + '-details-' + galleryItemId), { width: 400, maxWidth: 400 });
-            Alfresco.logger.debug("Has geo data");
-            this.markers.push(marker);
+            this._addMarker({
+               lat: properties["cm:latitude"],
+               lng: properties["cm:longitude"],
+               title: record.displayName,
+               galleryItemDetailDivId: scope.id + '-details-' + galleryItemId
+            });
          }
       };
    };
+   
+   /**
+    * Render the map instance into the map Dom element. Override this if you wish to use a different map implementation.
+    * 
+    * @method _renderMap
+    * @param scope {object} The DocumentList object
+    * @param {string} mapId   Dom ID of the element into which the map should be rendered
+    * @param {object} pObj    Map parameters. Must define a property `center` with `lat` and `lng` values.
+    * @private
+    */
+   Extras.DocumentListGeoViewRenderer.prototype._renderMap = function DL_GVR__renderMap(scope, mapId, pObj)
+   {
+      // set up the map
+      var center = pObj.center,
+         map = new L.Map(mapId).setView([center.lat, center.lng], this.zoomLevel);
+      
+      // create the tile layer with correct attribution
+      L.tileLayer(this.options.leafletTileUrl, {
+         attribution: scope.msg("label.copyright.osm")
+      }).addTo(map);
+      
+      map.on('zoomend', function(e) {
+         this._saveMapPreferences.call(this, scope);
+      }, this);
+      
+      map.on('moveend', function(e) {
+         this._saveMapPreferences.call(this, scope);
+      }, this);
+
+      this.map = map;
+   }
+   
+   /**
+    * Add a marker to the map. Override this if you wish to use a different map implementation.
+    * 
+    * @method _addMarker
+    * @param {string} mapId   Dom ID of the element into which the map should be rendered
+    * @param {object} mObj    Marker parameters. Must define properties `lat`, `lng`, `title` and `galleryItemDetailDivId`.
+    * @private
+    */
+   Extras.DocumentListGeoViewRenderer.prototype._addMarker = function DL_GVR__addMarker(mObj)
+   {
+      var marker = L.marker([mObj.lat, mObj.lng], {
+         title: mObj.title
+      }).addTo(this.map);
+      marker.bindPopup(Dom.get(mObj.galleryItemDetailDivId), { width: 400, maxWidth: 400 });
+      Alfresco.logger.debug("Binding popup to item ID " + mObj.galleryItemDetailDivId);
+      this.markers.push(marker);
+   }
+   
+   /**
+    * Remove all markers from the map. Override this if you wish to use a different map implementation.
+    * 
+    * @method _removeAllMarkers
+    * @private
+    */
+   Extras.DocumentListGeoViewRenderer.prototype._removeAllMarkers = function DL_GVR__removeAllMarkers()
+   {
+      for (var i = 0; i < this.markers.length; i++)
+      {
+         this.map.removeLayer(this.markers[i]);
+      }
+   }
+   
+   /**
+    * Save map settings using the preferences service. Override this if you wish to use a different map implementation.
+    * 
+    * @method _saveMapPreferences
+    * @param scope {object} The DocumentList object
+    * @private
+    */
+   Extras.DocumentListGeoViewRenderer.prototype._saveMapPreferences = function DL_GVR__saveMapPreferences(scope)
+   {
+      this._savePreferenceValues(scope, {
+         zoom: this.map.getZoom(), 
+         center: {
+            lat: this.map.getCenter().lat, 
+            lng: this.map.getCenter().lng
+         }
+      });
+   }
+   
+   /**
+    * Save preference values
+    * 
+    * @method _savePreferenceValues
+    * @param scope {object} The DocumentList object
+    * @param {object} pObj Setting values. Must define properties `center` and `zoom`.
+    * @private
+    */
+   Extras.DocumentListGeoViewRenderer.prototype._savePreferenceValues = function DL_GVR__savePreferenceValues(scope, pObj)
+   {
+      // save map position and zoom levels
+      // when zooming leaflet fires both events, which leads to an exception being thrown from the repo
+      // therefore we must first check that the another event is not 'in progress' before attempting the save
+      if (this.savingPrefs == false)
+      {
+         this.savingPrefs = true;
+         Alfresco.logger.debug("Set " + PREFERENCES_DOCLIST + " to " + pObj.zoom);
+         scope.services.preferences.set(PREFERENCES_DOCLIST, { zoomLevel: pObj.zoom, center: pObj.center.lat + "," + pObj.center.lng }, {
+            successCallback: {
+               fn: function() {
+                  this.savingPrefs = false;
+               },
+               scope: this
+            },
+            failureCallback: {
+               fn: function() {
+                  this.savingPrefs = false;
+               },
+               scope: this
+            }
+         });
+      }
+   }
 
 })();
