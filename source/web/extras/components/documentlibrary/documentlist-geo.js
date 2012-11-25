@@ -339,8 +339,6 @@ if (typeof Extras == "undefined" || !Extras)
          galleryItem.setAttribute('id', galleryItemId);
          container.appendChild(galleryItem);
          
-         //var galleryItemThumbnailDiv = this.getRowItemThumbnailElement(galleryItem);
-         //var galleryItemHeaderDiv = this.getRowItemHeaderElement(galleryItem);
          var galleryItemDetailDiv = this.getRowItemDetailElement(galleryItem);
          var galleryItemActionsDiv = this.getRowItemActionsElement(galleryItem);
          
@@ -352,36 +350,9 @@ if (typeof Extras == "undefined" || !Extras)
 
          // Details div ID
          galleryItemDetailDiv.setAttribute('id', scope.id + '-details-' + galleryItemId);
-         
-         // Render the thumbnail within the gallery item
-         /*
-         this.renderCellThumbnail(
-               scope,
-               galleryItemThumbnailDiv, 
-               oRecord, 
-               galleryItem, 
-               null,
-               '');*/
-         
-         // Add the drag and drop
-         /*
-         var imgId = record.jsNode.nodeRef.nodeRef;
-         var dnd = new Alfresco.DnD(imgId, scope);
-         */
-         
-         // Create a YUI Panel with a relative context of its associated galleryItem
-         /*
-         galleryItemDetailDiv.panel = new YAHOO.widget.Panel(galleryItemDetailDiv,
-         { 
-            visible:false, draggable:false, close:false, constraintoviewport: true, 
-            underlay: 'none', width: DETAIL_PANEL_WIDTH,
-            context: [galleryItem, 'tl', 'tl', [this.galleryColumnsChangedEvent], DETAIL_PANEL_OFFSET]
-         });
-         */
 
          var properties = record.jsNode.properties;
 
-         Alfresco.logger.debug(oRecord.getId());
          // create a marker in the given location and add it to the map
          if (properties["cm:latitude"] && properties["cm:longitude"])
          {
@@ -391,54 +362,8 @@ if (typeof Extras == "undefined" || !Extras)
             marker.bindPopup(Dom.get(scope.id + '-details-' + galleryItemId), { width: 400, maxWidth: 400 });
             Alfresco.logger.debug("Has geo data");
             this.markers.push(marker);
-            /*
-            marker.on("click", function(e) {
-               if (Dom.get(scope.id + '-details-' + this.galleryItemId))
-               {
-                  Dom.get(scope.id + '-popup-' + this.galleryItemId).appendChild(Dom.get(scope.id + '-details-' + this.galleryItemId));
-                  Dom.setStyle(Dom.get(scope.id + '-popup-' + this.galleryItemId).parentNode, "width", "");
-               }
-            }, { galleryItemId: galleryItemId });
-            //.bindPopup(name).openPopup();
-            //var marker = new L.Marker(latlng);
-            
-            */
          }
       };
-      
-      /*
-      scope.widgets.dataTable.subscribe("renderEvent", function DL_renderEvent()
-      {
-         Alfresco.logger.debug("DataTable renderEvent");
-      }, scope, true);*/
    };
-   
-   // TODO Need renderCellSelected()?
-   
-   /*
-   Extras.DocumentListGeoViewRenderer.prototype.renderCellThumbnail = function DL_GVR_renderCellThumbnail(scope, elCell, oRecord, oColumn, oData, imgIdSuffix)
-   {
-      var record = oRecord.getData(),
-      node = record.jsNode,
-      properties = node.properties,
-      name = record.displayName,
-      isContainer = node.isContainer,
-      isLink = node.isLink,
-      extn = name.substring(name.lastIndexOf(".")),
-      imgId = node.nodeRef.nodeRef; // DD added
-      
-      // Do something with the node
-
-      // create a marker in the given location and add it to the map
-      if (properties["cm:latitude"] && properties["cm:longitude"])
-      {
-         var marker = L.marker([properties["cm:latitude"], properties["cm:longitude"]]).addTo(this.map);
-         marker.bindPopup(name);
-         this.markers.push(marker);
-         //.bindPopup(name).openPopup();
-         //var marker = new L.Marker(latlng);
-      }
-   };
-   */
 
 })();
