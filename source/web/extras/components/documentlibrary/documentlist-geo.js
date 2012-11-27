@@ -77,6 +77,17 @@ if (typeof Extras == "undefined" || !Extras)
       this.metadataLineViewName = "detailed";
       this.thumbnailColumnWidth = 200;
       this.rowClassName = "alf-detail";
+      
+      var me = this;
+      
+      YAHOO.Bubbling.on("gmapsScriptLoaded", function onGmapsScriptLoaded() {
+         me.scriptLoaded = true;
+         if (this.renderedView == true)
+         {
+            me.renderView.call(me, me.scope);
+         }
+      });
+      
       return this;
    };
    
@@ -143,7 +154,7 @@ if (typeof Extras == "undefined" || !Extras)
          YAHOO.util.Dom.setStyle(scope.id + this.parentElementIdSuffix, 'display', 'none');
          YAHOO.util.Dom.setStyle(this.mapDiv, 'display', 'none');
          Dom.removeClass(scope.id + this.parentElementIdSuffix, "documents-geo");
-      },
+      }
       
    });
    
@@ -225,6 +236,12 @@ if (typeof Extras == "undefined" || !Extras)
          Dom.addClass(matchedEl, 'alf-hover');
          viewRendererInstance.onEventHighlightRow(scope, event, matchedEl);
       }, 'div.' + this.rowClassName, this);
+      
+      // Async load the Google Maps API. Need to do this, as it breaks the YUI Loader otherwise
+      var script = document.createElement("script");
+      script.type = "text/javascript";
+      script.src = window.location.protocol + "//maps.google.com/maps/api/js?sensor=false&callback=Extras.DocumentListGeoViewRenderer.onGMapsScriptLoad";
+      document.body.appendChild(script);
    };
    
    /**
@@ -238,87 +255,92 @@ if (typeof Extras == "undefined" || !Extras)
     */
    Extras.DocumentListGeoViewRenderer.prototype.renderView = function DL_GVR_renderView(scope, sRequest, oResponse, oPayload)
    {
-      YAHOO.util.Dom.setStyle(scope.id + this.parentElementIdSuffix, 'display', '');
-      Dom.addClass(scope.id + this.parentElementIdSuffix, "documents-geo");
-      
-      var mapId = scope.id + this.parentElementIdSuffix + "-map", 
-            mapDiv = Dom.get(mapId);
-      
-      var container = Dom.get(scope.id + this.parentElementIdSuffix);
-      var oRecordSet = scope.widgets.dataTable.getRecordSet();
-      
-      scope.widgets.dataTable.onDataReturnInitializeTable.call(scope.widgets.dataTable, sRequest, oResponse, oPayload);
-      
-      if (!this.mapDiv)
+      this.renderedView = true;
+      this.scope = scope;
+      if (this.scriptLoaded == true)
       {
-         mapDiv = document.createElement("div");
-         Dom.setAttribute(mapDiv, "id", mapId);
-         Dom.addClass(mapDiv, "map");
-         Dom.setStyle(mapDiv, "height", "" + ((window.innerHeight || document.documentElement.offsetHeight || document.body.offsetHeight) - 310) + "px");
-         Dom.get(scope.id + this.parentElementIdSuffix).appendChild(mapDiv);
-         this.mapDiv = mapDiv;
-      }
-      else
-      {
-         YAHOO.util.Dom.setStyle(this.mapDiv, 'display', '');
-      }
-      
-      if (!this.map)
-      {
-         var center = (this.center || "").split(",");
-         if (center.length == 1)
+         YAHOO.util.Dom.setStyle(scope.id + this.parentElementIdSuffix, 'display', '');
+         Dom.addClass(scope.id + this.parentElementIdSuffix, "documents-geo");
+         
+         var mapId = scope.id + this.parentElementIdSuffix + "-map", 
+               mapDiv = Dom.get(mapId);
+         
+         var container = Dom.get(scope.id + this.parentElementIdSuffix);
+         var oRecordSet = scope.widgets.dataTable.getRecordSet();
+         
+         scope.widgets.dataTable.onDataReturnInitializeTable.call(scope.widgets.dataTable, sRequest, oResponse, oPayload);
+         
+         if (!this.mapDiv)
          {
-            center = [51, 0];
+            mapDiv = document.createElement("div");
+            Dom.setAttribute(mapDiv, "id", mapId);
+            Dom.addClass(mapDiv, "map");
+            Dom.setStyle(mapDiv, "height", "" + ((window.innerHeight || document.documentElement.offsetHeight || document.body.offsetHeight) - 310) + "px");
+            Dom.get(scope.id + this.parentElementIdSuffix).appendChild(mapDiv);
+            this.mapDiv = mapDiv;
+         }
+         else
+         {
+            YAHOO.util.Dom.setStyle(this.mapDiv, 'display', '');
          }
          
-         this._renderMap(scope, mapId, {
-            center: {
-               lat: center[0],
-               lng: center[1]
-            }
-         });
-      }
-      
-      this._removeAllMarkers();
-      
-      var galleryItemTemplate = Dom.get(scope.id + '-geo-item-template'),
-         galleryItem = null;
-   
-      var oRecord, record, i, j;
-      for (i = 0, j = oRecordSet.getLength(); i < j; i++)
-      {
-         oRecord = oRecordSet.getRecord(i);
-         record = oRecord.getData();
-         
-         // Append a gallery item div
-         var galleryItemId = this.getRowItemId(oRecord);
-         galleryItem = galleryItemTemplate.cloneNode(true);
-         Dom.removeClass(galleryItem, 'hidden');
-         galleryItem.setAttribute('id', galleryItemId);
-         container.appendChild(galleryItem);
-         
-         var galleryItemDetailDiv = this.getRowItemDetailElement(galleryItem);
-         var galleryItemActionsDiv = this.getRowItemActionsElement(galleryItem);
-         
-         // Suffix of the content actions div id must match the onEventHighlightRow target id
-         galleryItemActionsDiv.setAttribute('id', scope.id + '-actions-' + galleryItemId);
-
-         // Details div ID
-         galleryItemDetailDiv.setAttribute('id', scope.id + '-details-' + galleryItemId);
-
-         var properties = record.jsNode.properties;
-
-         // create a marker in the given location and add it to the map
-         if (properties["cm:latitude"] && properties["cm:longitude"])
+         if (!this.map)
          {
-            this._addMarker({
-               lat: properties["cm:latitude"],
-               lng: properties["cm:longitude"],
-               title: record.displayName,
-               galleryItemDetailDivId: scope.id + '-details-' + galleryItemId
+            var center = (this.center || "").split(",");
+            if (center.length == 1)
+            {
+               center = [51, 0];
+            }
+            
+            this._renderMap(scope, mapId, {
+               center: {
+                  lat: center[0],
+                  lng: center[1]
+               }
             });
          }
-      };
+         
+         this._removeAllMarkers();
+         
+         var galleryItemTemplate = Dom.get(scope.id + '-geo-item-template'),
+            galleryItem = null;
+      
+         var oRecord, record, i, j;
+         for (i = 0, j = oRecordSet.getLength(); i < j; i++)
+         {
+            oRecord = oRecordSet.getRecord(i);
+            record = oRecord.getData();
+            
+            // Append a gallery item div
+            var galleryItemId = this.getRowItemId(oRecord);
+            galleryItem = galleryItemTemplate.cloneNode(true);
+            Dom.removeClass(galleryItem, 'hidden');
+            galleryItem.setAttribute('id', galleryItemId);
+            container.appendChild(galleryItem);
+            
+            var galleryItemDetailDiv = this.getRowItemDetailElement(galleryItem);
+            var galleryItemActionsDiv = this.getRowItemActionsElement(galleryItem);
+            
+            // Suffix of the content actions div id must match the onEventHighlightRow target id
+            galleryItemActionsDiv.setAttribute('id', scope.id + '-actions-' + galleryItemId);
+
+            // Details div ID
+            galleryItemDetailDiv.setAttribute('id', scope.id + '-details-' + galleryItemId);
+
+            var properties = record.jsNode.properties;
+
+            // create a marker in the given location and add it to the map
+            if (properties["cm:latitude"] && properties["cm:longitude"])
+            {
+               this._addMarker({
+                  lat: properties["cm:latitude"],
+                  lng: properties["cm:longitude"],
+                  title: record.displayName,
+                  galleryItemDetailDivId: scope.id + '-details-' + galleryItemId
+               });
+            }
+         };
+      }
    };
    
    /**
@@ -332,6 +354,7 @@ if (typeof Extras == "undefined" || !Extras)
     */
    Extras.DocumentListGeoViewRenderer.prototype._renderMap = function DL_GVR__renderMap(scope, mapId, pObj)
    {
+      /*
       // set up the map
       var center = pObj.center,
          map = new L.Map(mapId).setView([center.lat, center.lng], this.zoomLevel);
@@ -350,6 +373,26 @@ if (typeof Extras == "undefined" || !Extras)
       }, this);
 
       this.map = map;
+      */
+      var me = this,
+         center = pObj.center;
+      var myLatlng = new google.maps.LatLng(center.lat, center.lng);
+      this.map = new google.maps.Map(Dom.get(mapId), {
+         center: myLatlng,
+         zoom: this.zoomLevel,
+         mapTypeId: this.mapTypeId != null ? this.mapTypeId : google.maps.MapTypeId.ROADMAP
+      });
+
+      // Update map settings as user preferences
+      google.maps.event.addListener(this.map, "zoom_changed", function() {
+         me._saveMapPreferences.call(me, scope);
+      });
+      google.maps.event.addListener(this.map, "dragend", function() {
+         me._saveMapPreferences.call(me, scope);
+      });
+      google.maps.event.addListener(this.map, "maptypeid_changed", function() {
+         me._saveMapPreferences.call(me, scope);
+      });
    }
    
    /**
@@ -362,12 +405,32 @@ if (typeof Extras == "undefined" || !Extras)
     */
    Extras.DocumentListGeoViewRenderer.prototype._addMarker = function DL_GVR__addMarker(mObj)
    {
+      /*
       var marker = L.marker([mObj.lat, mObj.lng], {
          title: mObj.title
       }).addTo(this.map);
       marker.bindPopup(Dom.get(mObj.galleryItemDetailDivId), { width: 400, maxWidth: 400 });
       Alfresco.logger.debug("Binding popup to item ID " + mObj.galleryItemDetailDivId);
       this.markers.push(marker);
+      */
+      var me = this, map = this.map;
+      var latLng = new google.maps.LatLng(mObj.lat, mObj.lng);
+      var marker = new google.maps.Marker(
+      {
+         position: latLng,
+         map: map,
+         title: mObj.title
+      });
+      this.markers.push(marker);
+      
+      var infowindow = new google.maps.InfoWindow({
+         content: Dom.get(mObj.galleryItemDetailDivId),
+         size: new google.maps.Size(50,50)
+      });
+      google.maps.event.addListener(marker, 'click', function() {
+         infowindow.open(map, marker);
+         me.selectedMarker = marker;
+      });
    }
    
    /**
@@ -380,7 +443,8 @@ if (typeof Extras == "undefined" || !Extras)
    {
       for (var i = 0; i < this.markers.length; i++)
       {
-         this.map.removeLayer(this.markers[i]);
+         //this.map.removeLayer(this.markers[i]);
+         this.markers[i].setMap(null);
       }
    }
    
@@ -393,12 +457,25 @@ if (typeof Extras == "undefined" || !Extras)
     */
    Extras.DocumentListGeoViewRenderer.prototype._saveMapPreferences = function DL_GVR__saveMapPreferences(scope)
    {
+      /*
+      // save map position and zoom levels
+      // when zooming leaflet fires both events, which leads to an exception being thrown from the repo
+      // therefore we must first check that the another event is not 'in progress' before attempting the save
       this._savePreferenceValues(scope, {
          zoom: this.map.getZoom(), 
          center: {
             lat: this.map.getCenter().lat, 
             lng: this.map.getCenter().lng
          }
+      });
+      */
+      this._savePreferenceValues(scope, {
+         zoom: this.map.getZoom(), 
+         center: {
+            lat: this.map.getCenter().lat(), 
+            lng: this.map.getCenter().lng()
+         },
+         mapTypeId: this.map.getMapTypeId()
       });
    }
    
@@ -407,19 +484,32 @@ if (typeof Extras == "undefined" || !Extras)
     * 
     * @method _savePreferenceValues
     * @param scope {object} The DocumentList object
-    * @param {object} pObj Setting values. Must define properties `center` and `zoom`.
+    * @param {object} pObj Setting values. Must define properties `center` and `zoom`, can define others.
     * @private
     */
    Extras.DocumentListGeoViewRenderer.prototype._savePreferenceValues = function DL_GVR__savePreferenceValues(scope, pObj)
    {
-      // save map position and zoom levels
-      // when zooming leaflet fires both events, which leads to an exception being thrown from the repo
-      // therefore we must first check that the another event is not 'in progress' before attempting the save
       if (this.savingPrefs == false)
       {
          this.savingPrefs = true;
+         var prefValues = {};
+         for (var k in pObj)
+         {
+            if (k == "center")
+            {
+               prefValues["center"] = "" + pObj.center.lat + "," + pObj.center.lng;
+            }
+            else if (k == "zoom")
+            {
+               prefValues["zoomLevel"] = pObj.zoom;
+            }
+            else
+            {
+               prefValues[k] = pObj[k];
+            }
+         }
          Alfresco.logger.debug("Set " + PREFERENCES_DOCLIST + " to " + pObj.zoom);
-         scope.services.preferences.set(PREFERENCES_DOCLIST, { zoomLevel: pObj.zoom, center: pObj.center.lat + "," + pObj.center.lng }, {
+         scope.services.preferences.set(PREFERENCES_DOCLIST, prefValues, {
             successCallback: {
                fn: function() {
                   this.savingPrefs = false;
@@ -434,6 +524,11 @@ if (typeof Extras == "undefined" || !Extras)
             }
          });
       }
+   }
+   
+   Extras.DocumentListGeoViewRenderer.onGMapsScriptLoad = function DL_GVR_onGMapsScriptLoad(e)
+   {
+      YAHOO.Bubbling.fire("gmapsScriptLoaded");
    }
 
 })();

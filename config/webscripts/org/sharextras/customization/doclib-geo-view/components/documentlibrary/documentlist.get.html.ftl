@@ -27,6 +27,7 @@
             var geoViewRenderer = new Extras.DocumentListGeoViewRenderer("geo")
             geoViewRenderer.zoomLevel = ${preferences.zoomLevel!15};
             geoViewRenderer.center = "${(preferences.center!'')?js_string}";
+            geoViewRenderer.mapTypeId = "${(preferences.mapTypeId!'')?js_string}";
             scope.registerViewRenderer(geoViewRenderer);
         });
     //]]></script>
