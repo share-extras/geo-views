@@ -380,7 +380,7 @@ if (typeof Extras == "undefined" || !Extras)
       this.map = new google.maps.Map(Dom.get(mapId), {
          center: myLatlng,
          zoom: this.zoomLevel,
-         mapTypeId: this.mapTypeId != null ? this.mapTypeId : google.maps.MapTypeId.ROADMAP
+         mapTypeId: this.mapTypeId != null ? this.mapTypeId : google.maps.MapTypeId.HYBRID
       });
 
       // Update map settings as user preferences
