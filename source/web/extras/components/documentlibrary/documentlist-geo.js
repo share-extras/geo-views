@@ -354,26 +354,6 @@ if (typeof Extras == "undefined" || !Extras)
     */
    Extras.DocumentListGeoViewRenderer.prototype._renderMap = function DL_GVR__renderMap(scope, mapId, pObj)
    {
-      /*
-      // set up the map
-      var center = pObj.center,
-         map = new L.Map(mapId).setView([center.lat, center.lng], this.zoomLevel);
-      
-      // create the tile layer with correct attribution
-      L.tileLayer(this.options.leafletTileUrl, {
-         attribution: scope.msg("label.copyright.osm")
-      }).addTo(map);
-      
-      map.on('zoomend', function(e) {
-         this._saveMapPreferences.call(this, scope);
-      }, this);
-      
-      map.on('moveend', function(e) {
-         this._saveMapPreferences.call(this, scope);
-      }, this);
-
-      this.map = map;
-      */
       var me = this,
          center = pObj.center;
       var myLatlng = new google.maps.LatLng(center.lat, center.lng);
@@ -405,14 +385,6 @@ if (typeof Extras == "undefined" || !Extras)
     */
    Extras.DocumentListGeoViewRenderer.prototype._addMarker = function DL_GVR__addMarker(mObj)
    {
-      /*
-      var marker = L.marker([mObj.lat, mObj.lng], {
-         title: mObj.title
-      }).addTo(this.map);
-      marker.bindPopup(Dom.get(mObj.galleryItemDetailDivId), { width: 400, maxWidth: 400 });
-      Alfresco.logger.debug("Binding popup to item ID " + mObj.galleryItemDetailDivId);
-      this.markers.push(marker);
-      */
       var me = this, map = this.map;
       var latLng = new google.maps.LatLng(mObj.lat, mObj.lng);
       var marker = new google.maps.Marker(
@@ -443,7 +415,6 @@ if (typeof Extras == "undefined" || !Extras)
    {
       for (var i = 0; i < this.markers.length; i++)
       {
-         //this.map.removeLayer(this.markers[i]);
          this.markers[i].setMap(null);
       }
    }
@@ -457,18 +428,6 @@ if (typeof Extras == "undefined" || !Extras)
     */
    Extras.DocumentListGeoViewRenderer.prototype._saveMapPreferences = function DL_GVR__saveMapPreferences(scope)
    {
-      /*
-      // save map position and zoom levels
-      // when zooming leaflet fires both events, which leads to an exception being thrown from the repo
-      // therefore we must first check that the another event is not 'in progress' before attempting the save
-      this._savePreferenceValues(scope, {
-         zoom: this.map.getZoom(), 
-         center: {
-            lat: this.map.getCenter().lat, 
-            lng: this.map.getCenter().lng
-         }
-      });
-      */
       this._savePreferenceValues(scope, {
          zoom: this.map.getZoom(), 
          center: {
@@ -530,5 +489,62 @@ if (typeof Extras == "undefined" || !Extras)
    {
       YAHOO.Bubbling.fire("gmapsScriptLoaded");
    }
+   
+   YAHOO.extend(Extras.DocumentListLeafletGeoViewRenderer, Extras.DocumentListGeoViewRenderer,
+   {
+      _renderMap: function DL_LGVR__renderMap(scope, mapId, pObj)
+      {
+         // set up the map
+         var center = pObj.center,
+            map = new L.Map(mapId).setView([center.lat, center.lng], this.zoomLevel);
+         
+         // create the tile layer with correct attribution
+         L.tileLayer(this.options.leafletTileUrl, {
+            attribution: scope.msg("label.copyright.osm")
+         }).addTo(map);
+         
+         map.on('zoomend', function(e) {
+            this._saveMapPreferences.call(this, scope);
+         }, this);
+         
+         map.on('moveend', function(e) {
+            this._saveMapPreferences.call(this, scope);
+         }, this);
+
+         this.map = map;
+      },
+      
+      _addMarker: function DL_LGVR__addMarker(mObj)
+      {
+         var marker = L.marker([mObj.lat, mObj.lng], {
+            title: mObj.title
+         }).addTo(this.map);
+         marker.bindPopup(Dom.get(mObj.galleryItemDetailDivId), { width: 400, maxWidth: 400 });
+         Alfresco.logger.debug("Binding popup to item ID " + mObj.galleryItemDetailDivId);
+         this.markers.push(marker);
+      },
+      
+      _removeAllMarkers: function DL_GVR__removeAllMarkers()
+      {
+         for (var i = 0; i < this.markers.length; i++)
+         {
+            this.map.removeLayer(this.markers[i]);
+         }
+      },
+      
+      _saveMapPreferences = function DL_LGVR__saveMapPreferences(scope)
+      {
+         // save map position and zoom levels
+         // when zooming leaflet fires both events, which leads to an exception being thrown from the repo
+         // therefore we must first check that the another event is not 'in progress' before attempting the save
+         this._savePreferenceValues(scope, {
+            zoom: this.map.getZoom(), 
+            center: {
+               lat: this.map.getCenter().lat, 
+               lng: this.map.getCenter().lng
+            }
+         });
+      }
+   });
 
 })();
