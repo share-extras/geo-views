@@ -56,8 +56,9 @@ function main()
     */
    var mapWidget = {
       // Name of the JS component to use for the dashlet. Use to switch between Leaflet and GMaps.
-      //name: "Extras.dashlet.GMapsSiteGeotaggedContent",
-      name: "Extras.dashlet.LeafletSiteGeotaggedContent",
+      id: "SiteGeotaggedContent",
+      name: "Extras.dashlet.GMapsSiteGeotaggedContent",
+      //name: "Extras.dashlet.LeafletSiteGeotaggedContent",
       options: {
          // Use OSM by default for Leaflet tiles
          leafletTileUrl: "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

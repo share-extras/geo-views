@@ -1,11 +1,11 @@
 <extension>
     <modules>
         <module>
-            <id>Document List Geographic View</id>
+            <id>Document List Geographic View (Leaflet)</id>
             <customizations>
                 <customization>
                     <targetPackageRoot>org.alfresco</targetPackageRoot>
-                    <sourcePackageRoot>org.sharextras.customization.doclib-geo-view</sourcePackageRoot>
+                    <sourcePackageRoot>org.sharextras.customization.doclib-geo-view-leaflet</sourcePackageRoot>
                 </customization>
             </customizations>
         </module>

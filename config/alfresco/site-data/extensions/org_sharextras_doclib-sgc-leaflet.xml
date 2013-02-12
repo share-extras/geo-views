@@ -1,0 +1,13 @@
+<extension>
+    <modules>
+        <module>
+            <id>Site Geotagged Content Dashlet (Leaflet)</id>
+            <customizations>
+                <customization>
+                    <targetPackageRoot>org.sharextras</targetPackageRoot>
+                    <sourcePackageRoot>org.sharextras.customization.site-geotagged-content-leaflet</sourcePackageRoot>
+                </customization>
+            </customizations>
+        </module>
+    </modules>
+</extension>
