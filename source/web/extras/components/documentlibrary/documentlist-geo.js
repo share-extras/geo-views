@@ -76,7 +76,6 @@ if (typeof Extras == "undefined" || !Extras)
       this.metadataBannerViewName = "detailed";
       this.metadataLineViewName = "detailed";
       this.thumbnailColumnWidth = 200;
-      this.rowClassName = "alf-detail";
       
       var me = this;
       
@@ -488,7 +487,12 @@ if (typeof Extras == "undefined" || !Extras)
    Extras.DocumentListGeoViewRenderer.onGMapsScriptLoad = function DL_GVR_onGMapsScriptLoad(e)
    {
       YAHOO.Bubbling.fire("gmapsScriptLoaded");
-   }
+   };
+   
+   Extras.DocumentListLeafletGeoViewRenderer = function DocumentListLeafletGeoViewRenderer_constructor(name)
+   {
+      Extras.DocumentListLeafletGeoViewRenderer.superclass.constructor.call(this, name);
+   };
    
    YAHOO.extend(Extras.DocumentListLeafletGeoViewRenderer, Extras.DocumentListGeoViewRenderer,
    {
@@ -532,7 +536,7 @@ if (typeof Extras == "undefined" || !Extras)
          }
       },
       
-      _saveMapPreferences = function DL_LGVR__saveMapPreferences(scope)
+      _saveMapPreferences: function DL_LGVR__saveMapPreferences(scope)
       {
          // save map position and zoom levels
          // when zooming leaflet fires both events, which leads to an exception being thrown from the repo
