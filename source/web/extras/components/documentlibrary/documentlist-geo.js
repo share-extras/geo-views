@@ -272,7 +272,7 @@ if (typeof Extras == "undefined" || !Extras)
          var center = (this.center || "").split(",");
          if (center.length == 1)
          {
-            center = [51, 0];
+            center = [51.5073, -0.12755]; // Charing Cross, London. TODO: Allow this to be overridden by modules.
          }
          
          this._renderMap(scope, mapId, {
