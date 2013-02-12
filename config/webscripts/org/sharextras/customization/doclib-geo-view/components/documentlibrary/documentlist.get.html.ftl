@@ -24,7 +24,7 @@
     <script type="text/javascript">//<![CDATA[
         YAHOO.Bubbling.subscribe("postSetupViewRenderers", function(layer, args) {
             var scope = args[1].scope;
-            var geoViewRenderer = new Extras.DocumentListGeoViewRenderer("geo")
+            var geoViewRenderer = new ${geoRendererClass}("geo")
             geoViewRenderer.zoomLevel = ${preferences.zoomLevel!15};
             geoViewRenderer.center = "${(preferences.center!'')?js_string}";
             geoViewRenderer.mapTypeId = "${(preferences.mapTypeId!'')?js_string}";

@@ -2,11 +2,19 @@
     <modules>
         <module>
             <id>Document List Geographic View</id>
-            <auto-deploy>true</auto-deploy>
             <customizations>
                 <customization>
                     <targetPackageRoot>org.alfresco</targetPackageRoot>
                     <sourcePackageRoot>org.sharextras.customization.doclib-geo-view</sourcePackageRoot>
+                </customization>
+            </customizations>
+        </module>
+        <module>
+            <id>Document List Geographic View (Leaflet)</id>
+            <customizations>
+                <customization>
+                    <targetPackageRoot>org.alfresco</targetPackageRoot>
+                    <sourcePackageRoot>org.sharextras.customization.doclib-geo-view-leaflet</sourcePackageRoot>
                 </customization>
             </customizations>
         </module>
