@@ -1127,7 +1127,7 @@ if (typeof Extras.dashlet == "undefined" || !Extras.dashlet)
        */
       isSameMarker: function SiteGeotaggedContent_isSameMarker(m1, m2)
       {
-         return m1 != null && m2 != null && m1.getLatLng().toString().equals(m1.getLatLng().toString());
+         return m1 != null && m2 != null && m1.getLatLng().toString() == m1.getLatLng().toString();
       }
    });
       
