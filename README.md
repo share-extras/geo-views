@@ -1,16 +1,19 @@
-Site Geotagged Content dashlet for Alfresco Share
-=================================================
+Geo Views add-on for Alfresco Share
+===================================
 
 Author: Will Abson
 
-This project defines a custom site dashlet which displays all geotagged content
-within the site in a map view.
+This project provides the following components which display geotagged content
+items within the site in a map view:
+
+  * Site Geotagged Content Dashlet
+  * Document Library 'Geographic' View
 
 Installation
 ------------
 
 The dashlet has been developed to install on top of an existing Alfresco
-3.3 installation.
+3.3/3.4 or 4.x installation.
 
 An Ant build script is provided to build a JAR file containing the 
 custom files, which can then be installed into the 'tomcat/shared/lib' folder 
@@ -21,7 +24,7 @@ directory.
 
     ant clean dist-jar
 
-The command should build a JAR file named site-poll-dashlet.jar
+The command should build a JAR file named `geo-views-<version>.jar`
 in the 'dist' directory within your project.
 
 To deploy the dashlet files into a local Tomcat instance for testing, you can 
@@ -33,8 +36,10 @@ property in Ant.
 Once you have run this you will need to restart Tomcat so that the classpath 
 resources in the JAR file are picked up.
 
-Using the dashlet
------------------
+Usage
+-----
+
+### Using the Dashlet
 
 Log in to Alfresco Share and navigate to a site dashboard. Click the 
 Customize Dashboard button to edit the contents of the dashboard and drag 
