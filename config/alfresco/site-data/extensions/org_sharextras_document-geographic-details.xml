@@ -1,0 +1,64 @@
+<extension>
+    <modules>
+        <module>
+            <id>Document Geographic Details Component</id>
+            <components>
+                <component>
+                    <region-id>document-tags</region-id>
+                    <source-id>document-details</source-id>
+                    <scope>template</scope>
+                    <sub-components>
+                        <sub-component id="org_sharextras_document-geographic-info" index="25">
+                            <url>/extras/components/document-details/document-geographic-info</url>
+                        </sub-component>
+                    </sub-components>
+                </component>
+            </components>
+        </module>
+        <module>
+            <id>View in OpenStreetMap Action</id>
+            <configurations>
+		        <config evaluator="string-compare" condition="DocLibActions">
+			        <actionGroups>
+			            <actionGroup id="document-browse">
+				            <action index="996" id="org_sharextras_document-view-osm" />
+			            </actionGroup>
+			            <actionGroup id="document-details">
+				            <action index="996" id="org_sharextras_document-view-osm" />
+			            </actionGroup>
+			        </actionGroups>
+			    </config>
+	        </configurations>
+        </module>
+        <module>
+            <id>View in Geohack</id>
+            <configurations>
+                <config evaluator="string-compare" condition="DocLibActions">
+                    <actionGroups>
+                        <actionGroup id="document-browse">
+                            <action index="997" id="org_sharextras_document-view-geohack" />
+                        </actionGroup>
+                        <actionGroup id="document-details">
+                            <action index="997" id="org_sharextras_document-view-geohack" />
+                        </actionGroup>
+                    </actionGroups>
+                </config>
+            </configurations>
+        </module>
+        <module>
+            <id>Geotag Document Action</id>
+            <configurations>
+                <config evaluator="string-compare" condition="DocLibActions">
+                    <actionGroups>
+                        <actionGroup id="document-browse">
+                            <action index="998" id="org_sharextras_document-geotag" />
+                        </actionGroup>
+                        <actionGroup id="document-details">
+                            <action index="998" id="org_sharextras_document-geotag" />
+                        </actionGroup>
+                    </actionGroups>
+                </config>
+            </configurations>
+        </module>
+    </modules>
+</extension>

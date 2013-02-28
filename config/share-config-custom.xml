@@ -1,0 +1,49 @@
+<alfresco-config>
+   
+   <config evaluator="string-compare" condition="DocLibCustom">   
+      <dependencies>
+         <!-- Geotag action dependencies -->
+         <css src="/extras/components/documentlibrary/geotag-action.css" />
+         <js src="/extras/components/documentlibrary/geotag-action.js" />
+         <!-- View in Geohack dependencies -->
+         <js src="/extras/components/documentlibrary/view-geohack-action.js" />
+      </dependencies> 
+   </config>
+	
+	<config evaluator="string-compare" condition="DocLibActions">
+      <actions>
+         <!-- Geotag action definition -->
+         <action id="org_sharextras_document-geotag" type="javascript" label="actions.document.geotag"
+                icon="../../../extras/components/documentlibrary/actions/org_sharextras_document-geotag">
+            <param name="function">onActionGeotag</param>
+         </action>
+         <!-- View in Geohack action definition -->
+         <action id="org_sharextras_document-view-geohack" type="javascript" label="actions.document.view-geohack"
+                icon="../../../extras/components/documentlibrary/actions/org_sharextras_document-view-geohack">
+            <param name="function">onActionViewGeohack</param>
+            <!-- require aspect cm:geographic -->
+            <evaluator>evaluator.doclib.action.googleMaps</evaluator>
+         </action>
+         <!-- View on OpenStreetMap action definition -->
+         <action id="org_sharextras_document-view-osm" type="pagelink" label="actions.document.view-osm"
+                icon="../../../extras/components/documentlibrary/actions/org_sharextras_document-view-osm">
+            <param name="page">osm-map?nodeRef={node.nodeRef}</param>
+            <!-- aspect cm:geographic -->
+            <evaluator>evaluator.doclib.action.googleMaps</evaluator>
+         </action>
+      </actions>
+   </config>
+   
+   <!-- Custom OSM Nominatim Endpoint, for reverse geolocation -->
+   <config evaluator="string-compare" condition="Remote">
+      <remote>
+         <endpoint>
+            <id>osm-nominatim</id>
+            <name>OpenStreetMap Nominatim</name>
+            <connector-id>http</connector-id>
+            <endpoint-url>http://nominatim.openstreetmap.org</endpoint-url>
+         </endpoint>
+      </remote>
+   </config>
+
+</alfresco-config>

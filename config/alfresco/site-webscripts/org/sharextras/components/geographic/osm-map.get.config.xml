@@ -1,0 +1,10 @@
+<osm-map>
+    <!-- Either leaflet or openlayers -->
+    <mapType>leaflet</mapType>
+    <!-- Map zoom 0-18 (larger numbers have greater zoom level) -->
+    <mapInitialZoom>15</mapInitialZoom>
+    <!-- Leaflet tile URL template - see http://leaflet.cloudmade.com/reference.html#tilelayer -->
+    <leafletTileUrl>http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png</leafletTileUrl>
+    <!-- Whether to display the location retrieved from from reverse geocode service -->
+    <loadLocation>true</loadLocation>
+</osm-map>
