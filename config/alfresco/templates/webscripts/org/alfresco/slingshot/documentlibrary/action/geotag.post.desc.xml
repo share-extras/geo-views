@@ -1,0 +1,9 @@
+<webscript>
+  <shortname>Geotag Content Item Action</shortname>
+  <description>Document List Action - Geotag document(s)</description>
+  <url>/slingshot/doclib/action/geotag/site/{siteId}/{containerId}?lat={lat}&amp;lon={lon}</url>
+  <url>/slingshot/doclib/action/geotag/node/{store_type}/{store_id}/{id}?lat={lat}&amp;lon={lon}</url>
+  <format default="json">argument</format>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

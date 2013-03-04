@@ -1,0 +1,5 @@
+<webscript>
+  <shortname>Geotag Content</shortname>
+  <description>Geotag content module primarily for Document Library</description>
+  <url>/extras/modules/documentlibrary/geotag</url>
+</webscript>
