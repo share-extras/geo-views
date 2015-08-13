@@ -1,1 +1,9 @@
-/build
+build/
+target/
+bin/
+alf_data_dev/
+alfresco.log
+share.log
+
+.settings/
+.project
